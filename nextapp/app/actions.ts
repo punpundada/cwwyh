@@ -15,3 +15,7 @@ export async function storeToken(request: StoreTokenRequest) {
         secure: true,
     })
 }
+
+export const deleteToken = async () => {
+    const res = cookies().delete("accessToken");
+}

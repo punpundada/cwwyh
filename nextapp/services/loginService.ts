@@ -9,8 +9,14 @@ interface login_res {
   message: string;
 }
 
-export const loginService = cache(async(data: ILoginReq) => {
-  const res = await axiosInstance.post<ApiRes<login_res>>("/user/login", data);
-  await storeToken({token:res.data.data.accessToken});
-  return res.data;
+export const loginService = cache(async (data: ILoginReq) => {
+  try {
+    const res = await axiosInstance.post<ApiRes<login_res>>("/user/login", data);
+    if(res.data.isSuccess){
+      await storeToken({ token: res.data.data.accessToken });
+    }
+    return res.data;
+  } catch (error) {
+    console.log(error)
+  }
 });
