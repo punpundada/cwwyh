@@ -6,16 +6,10 @@ import { useForm } from "react-hook-form";
 import { ILoginReq, loginSchema } from "@/types/loginReq";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button } from "./ui/button";
-import { loginService } from "@/services/loginService";
-import { useToast } from "./ui/use-toast";
-import {tokenHelper} from "@/lib/utils";
-import { useRouter } from "next/navigation";
+import useLogin from "@/hooks/useLogin";
 
 const LoginForm = () => {
-  const { setValue } = tokenHelper();
-  const { toast } = useToast();
-  const router = useRouter();
-
+  const setData = useLogin();
   const { control, handleSubmit } = useForm<ILoginReq>({
     defaultValues: {
       email: "",
@@ -26,12 +20,13 @@ const LoginForm = () => {
   });
 
   const onSubmit = async (data: ILoginReq) => {
-    const res = await loginService(data);
-    if (res.isSuccess) {
-      setValue(res.data.accessToken);
-      toast({ title: "Success", description: res.data.message, className: "" });
-      router.push('/')
-    }
+    // const res = await loginService(data);
+    // if (res.isSuccess) {
+    //   setValue(res.data.accessToken);
+    //   toast({ title: "Success", description: res.data.message, className: "" });
+    //   router.push('/')
+    // }
+    setData(data);
   };
 
   return (
