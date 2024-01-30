@@ -3,7 +3,6 @@ import LoginForm from "@/components/LoginForm";
 import React from "react";
 
 const LoginPage = () => {
-
   return (
     <Container className="w-full h-full">
       <Container className="w-1/2 h-full hidden md:flex">

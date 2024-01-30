@@ -6,10 +6,13 @@ import { useForm } from "react-hook-form";
 import { ILoginReq, loginSchema } from "@/types/loginReq";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button } from "./ui/button";
-import useLogin from "@/hooks/useLogin";
+import { useAuthStore } from "@/store/auth-store";
+import { useToast } from "./ui/use-toast";
 
 const LoginForm = () => {
-  const setData = useLogin();
+  const login = useAuthStore((s) => s.login);
+  const { toast } = useToast();
+  const isLoading = useAuthStore((s) => s.isLoading);
   const { control, handleSubmit } = useForm<ILoginReq>({
     defaultValues: {
       email: "",
@@ -20,13 +23,14 @@ const LoginForm = () => {
   });
 
   const onSubmit = async (data: ILoginReq) => {
-    // const res = await loginService(data);
-    // if (res.isSuccess) {
-    //   setValue(res.data.accessToken);
-    //   toast({ title: "Success", description: res.data.message, className: "" });
-    //   router.push('/')
-    // }
-    setData(data);
+    const res = login(data);
+    if (await res) {
+      toast({
+        title: "Success",
+        description: "Login Successfully",
+        duration: 10000,
+      });
+    }
   };
 
   return (
@@ -50,6 +54,7 @@ const LoginForm = () => {
           type="submit"
           variant={"secondary"}
           className=" w-full h-12 text-xl md:h-10 md:text-base"
+          disabled={isLoading}
         >
           Login
         </Button>

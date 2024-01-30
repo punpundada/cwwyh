@@ -1,21 +1,24 @@
-"use server"
+"use server";
 
-import { cookies } from "next/headers"
+import { cookies } from "next/headers";
 
 interface StoreTokenRequest {
-    token: string
+  token: string;
 }
 
 export async function storeToken(request: StoreTokenRequest) {
-    cookies().set({
-        name: "accessToken",
-        value: request.token,
-        httpOnly: true,
-        sameSite: "strict",
-        secure: true,
-    })
+  cookies().set({
+    name: "accessToken",
+    value: request.token,
+    httpOnly: true,
+    sameSite: "strict",
+    secure: true,
+  });
 }
 
 export const deleteToken = async () => {
-    const res = cookies().delete("accessToken");
-}
+  const res = cookies().delete("accessToken");
+};
+
+export const checkIsLoggedIn = async () =>
+  !!cookies().get("accessToken")?.value;
