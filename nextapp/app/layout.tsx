@@ -31,7 +31,7 @@ export default function RootLayout({
           <Toaster />
             <NavBar />
           </div>
-          <main className="w-full h-[91%]">{children}</main>
+          <main className="w-full h-full">{children}</main>
         </ThemeProvider>
       </body>
     </html>

@@ -9,10 +9,10 @@ import { devtools, persist } from "zustand/middleware";
 
 interface authStoreProps {
   isLoggedIn: boolean;
-  setIsLoggedIn: (x: boolean) => void;
   logOut: () => void;
   login: (data: ILoginReq) => Promise<ApiRes<login_res> | undefined>;
   isLoading: boolean;
+  checkIsLoggedIn: () => Promise<boolean>;
 }
 export const useAuthStore = create<authStoreProps>()(
   devtools(
@@ -43,7 +43,16 @@ export const useAuthStore = create<authStoreProps>()(
             console.log(error);
           }
         },
-        setIsLoggedIn: (x) => set((state) => ({ isLoggedIn: x })),
+        checkIsLoggedIn: async () => {
+          try {
+            const res = await fetch("/api/auth/token");
+            const resData = await res.json();
+            return !!resData?.token;
+          } catch (e) {
+            console.log(e);
+            return false;
+          }
+        },
       }),
       { name: "authStore" }
     )
