@@ -1,13 +1,38 @@
-import Container from "@/components/Container";
-import ToastButton from "@/components/ToastButton";
-import { Button } from "@/components/ui/button";
+import React from "react";
+import img from "@/assets/pranjall-kumar-sejqj6Eaqe8-unsplash.jpg";
 import Image from "next/image";
+import '@/components/home-sub-pages/home-page.css';
+import Container from "@/components/Container";
+import Page1 from "@/components/home-sub-pages/page1";
 
 export default function Home() {
   return (
-    <div className="flex flex-col items-center justify-between bg-background h-full">
-      <ToastButton/>  
-    </div>
+<>
+<Container
+      component="section"
+      className="hero-banner"
+    >
+      <div className="hero-banner__title" aria-hidden={true}>
+        Cook With What You Have
+      </div>
+
+      <div className="relative w-[400px] h-[400px]">
+        <Image
+          src={img}
+          alt="hero section image"
+          className="hero-banner__image"
+          height={400}
+          width={400}
+        />
+      </div>
+      <h1 className="hero-banner__title hero-banner__stroked-title">
+      Cook With What You Have
+      </h1>
+    </Container>
+    <section className="content h-full w-full">
+        <Page1/>
+    </section>
+</>
   );
 }
 

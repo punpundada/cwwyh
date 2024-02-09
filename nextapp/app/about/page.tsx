@@ -1,10 +1,11 @@
+import Container from '@/components/Container'
 import React from 'react'
 
 const AboutPage = () => {
   return (
-    <div className='flex justify-center w-full h-full items-center bg-inherit font-extrabold text-5xl text-amber-400'>
+    <Container className=' bg-inherit font-extrabold text-5xl text-amber-400 h-screen'>
       About
-    </div>
+    </Container>
   )
 }
 
