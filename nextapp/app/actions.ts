@@ -13,6 +13,7 @@ export async function storeToken(request: StoreTokenRequest) {
     httpOnly: true,
     sameSite: "strict",
     secure: true,
+    expires:3600000,
   });
 }
 

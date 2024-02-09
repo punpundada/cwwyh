@@ -32,7 +32,7 @@ const NavBar = ({ className, ...props }: navTypes) => {
                   // size={'lg'}
                   variant={"ghost"}
                   asChild
-                  className={cn("text-lg hover:translate-y-1 transition-all")}
+                  className={cn("text-lg hover:translate-y-1 hover:scale-105 transition-all")}
                 >
                   <Link href={x.path} className="text-lg">
                     {x.name}
