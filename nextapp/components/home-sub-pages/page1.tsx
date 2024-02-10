@@ -1,14 +1,19 @@
 import React from "react";
 import Container from "../Container";
-import '@/components/home-sub-pages/home-page.css';
+import "@/components/home-sub-pages/home-page.css";
+import Image from "next/image";
+import img from '@/assets/micheile-henderson-3YHXTs1CxFI-unsplash.jpg'
+import SignupForm from "../SignupForm";
 const Page1 = () => {
   return (
-    <Container className="" >
-      <Container className="w-1/2 sm:hidden md:flex">
-        image
+    <Container className="w-screen">
+      <Container className="hidden md:flex md:w-1/2 relative">
+        <Image src={img} alt='side image' fill className="object-cover p-4 rounded-3xl " />
       </Container>
-      <Container className="w-1/2">
-        SIgnup FOrm
+      <Container className="w-full md:w-1/2 h-full">
+        <div className="w-5/6 md:w-3/4">
+        <SignupForm/>
+        </div>
       </Container>
     </Container>
   );

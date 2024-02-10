@@ -1,10 +1,16 @@
+import Container from '@/components/Container'
+import SignupForm from '@/components/SignupForm'
 import React from 'react'
-
+import img from "@/assets/youjeen-cho-sMzctZfr4O4-unsplash.jpg"
+import Image from 'next/image'
 const SignUpPage = () => {
   return (
-    <div className='flex justify-center w-full h-full items-center bg-inherit font-extrabold text-5xl text-amber-400'>
-      Login
-    </div>
+    <Container className='w-screen h-screen relative'>
+      <Image src={img} alt='backimage' fill className='object-cover -z-10'/>
+      <Container className='w-5/6 md:w-[45%]'>
+        <SignupForm/>
+      </Container>
+    </Container>
   )
 }
 

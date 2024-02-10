@@ -23,7 +23,7 @@ export default function RootLayout({
       <body className={cn(inter.className,"w-screen h-screen")}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="light"
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
@@ -31,7 +31,7 @@ export default function RootLayout({
           <Toaster />
             <NavBar />
           </div>
-          <main className="w-full">{children}</main>
+          <main className="h-screen">{children}</main>
         </ThemeProvider>
       </body>
     </html>
