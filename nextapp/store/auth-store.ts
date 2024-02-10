@@ -4,6 +4,8 @@ import { ILoginReq } from "@/types/loginReq";
 import { loginService, login_res } from "@/services/loginService";
 import { ApiRes } from "@/types/ApiRes";
 import { devtools, persist ,createJSONStorage} from "zustand/middleware";
+import { ISignupReq } from "@/types/ISignupReq";
+import { ISignup_res, signupService } from "@/services/signupService";
 
 interface authStoreProps {
   isLoggedIn: boolean;
@@ -11,6 +13,7 @@ interface authStoreProps {
   login: (data: ILoginReq) => Promise<ApiRes<login_res> | undefined>;
   isLoading: boolean;
   checkIsLoggedIn: () => Promise<boolean>;
+  signup:(data: ISignupReq) => Promise<ApiRes<ISignup_res> | undefined>
 }
 export const useAuthStore = create<authStoreProps>()(
   devtools(
@@ -53,6 +56,14 @@ export const useAuthStore = create<authStoreProps>()(
             return false;
           }
         },
+        signup:async (data)=>{
+          try {
+            const res = signupService(data)
+            return res
+          } catch (error) {
+            console.log(error)
+          }
+        }
       }),
       { name: "authStore", 
       storage: createJSONStorage(() => sessionStorage),

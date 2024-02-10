@@ -8,12 +8,14 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Button } from "./ui/button";
 import { useAuthStore } from "@/store/auth-store";
 import { useToast } from "./ui/use-toast";
+import { Form } from "./ui/form";
+import Link from "next/link";
 
 const LoginForm = () => {
   const login = useAuthStore((s) => s.login);
   const { toast } = useToast();
   const isLoading = useAuthStore((s) => s.isLoading);
-  const { control, handleSubmit } = useForm<ILoginReq>({
+  const form = useForm<ILoginReq>({
     defaultValues: {
       email: "",
       password: "",
@@ -21,7 +23,7 @@ const LoginForm = () => {
     resolver: yupResolver(loginSchema),
     mode: "onSubmit",
   });
-
+  const { control, handleSubmit } = form;
   const onSubmit = async (data: ILoginReq) => {
     const res = login(data);
     if (await res) {
@@ -34,32 +36,39 @@ const LoginForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="w-full h-full">
-      <Container className="gap-8 justify-start py-24 flex-col w-3/4 h-full md:justify-center md:py-0 md:w-1/2">
-        <InputController
-          control={control}
-          name="email"
-          placeholder="Email"
-          type="email"
-          className="h-16 text-xl md:h-10 md:text-base"
-        />
-        <InputController
-          control={control}
-          name="password"
-          placeholder="password"
-          type="password"
-          className="h-16 text-xl md:h-10 md:text-base"
-        />
-        <Button
-          type="submit"
-          variant={"secondary"}
-          className=" w-full h-12 text-xl md:h-10 md:text-base"
-          disabled={isLoading}
-        >
-          Login
-        </Button>
-      </Container>
-    </form>
+    <Container className="w-full h-full flex-col">
+    <Form {...form}>
+      <form onSubmit={handleSubmit(onSubmit)} className="w-full">
+        <Container className="gap-8 justify-start py-24 flex-col w-3/4 h-full md:justify-center md:py-0 md:w-1/2">
+          <InputController
+            control={control}
+            name="email"
+            placeholder="Email"
+            type="email"
+            className="h-16 text-xl md:h-10 md:text-base w-full"
+          />
+          <InputController
+            control={control}
+            name="password"
+            placeholder="password"
+            type="password"
+            className="h-16 text-xl md:h-10 md:text-base"
+          />
+          <Button
+            type="submit"
+            variant={"outline"}
+            className=" w-full h-12 text-xl md:h-10 md:text-base"
+            disabled={isLoading}
+          >
+            Login
+          </Button>
+        </Container>
+      </form>
+    </Form>
+     <p className="text-xl pt-4">Do not  have an account? <strong>
+      <Link href={'/signup'}>click here</Link>
+      </strong></p>
+    </Container>
   );
 };
 
