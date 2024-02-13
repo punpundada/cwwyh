@@ -5,7 +5,7 @@ const axiosInstance = axios.create({
   baseURL,
 });
 
-const notProtectedRoutes = ["/login", "/signup"];
+const notProtectedRoutes = ["/user/login", "/user/signup"];
 
 axiosInstance.interceptors.request.use(
   async (config) => {
@@ -13,6 +13,7 @@ axiosInstance.interceptors.request.use(
       return config;
     }
     const res = await fetch("/api/auth/token");
+    console.log(res)
     const resData = await res.json();
     const token = resData?.token;
 
