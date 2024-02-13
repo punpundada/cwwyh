@@ -66,7 +66,7 @@ export const useAuthStore = create<authStoreProps>()(
         }
       }),
       { name: "authStore", 
-      storage: createJSONStorage(() => sessionStorage),
+      // storage: createJSONStorage(() => sessionStorage),
     }
     )
   )
