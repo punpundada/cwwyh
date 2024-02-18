@@ -10,16 +10,14 @@ import { useEffect, useLayoutEffect, useState } from "react";
 const LoginButton = () => {
   const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
   const loginHandler = useAuthStore((s) => s.logOut);
-  const checkIsLoggedIn = useAuthStore((s) => s.checkIsLoggedIn);
   const router = useRouter();
   const logOut = () => {
     loginHandler();
     router.push("/");
   };
   
-  useLayoutEffect(()=>{
+  useEffect(()=>{
     const doAction = async()=>{
-      // checkIsLoggedIn();
       if(isLoggedIn){
         router.push('/')
       }
@@ -27,12 +25,6 @@ const LoginButton = () => {
     doAction()
   },[isLoggedIn, router])
 
-  useLayoutEffect(()=>{
-    const check = async () => {
-      await checkIsLoggedIn()
-    }
-    check()
-  },[])
 
   return (
     <Container className="justify-end w-auto mx-4">

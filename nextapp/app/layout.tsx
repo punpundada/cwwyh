@@ -20,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   //prefetching the recipes query
-  getAllRecipeService(0,undefined)
+  // getAllRecipeService(0,undefined)
   return (
     <html lang="en">
       <body className={cn(inter.className,"w-screen h-screen")}>

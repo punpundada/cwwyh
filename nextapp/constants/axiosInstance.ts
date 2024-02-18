@@ -12,9 +12,7 @@ axiosInstance.interceptors.request.use(
     if (notProtectedRoutes.includes(config.url || "")) {
       return config;
     }
-    const res = await fetch("/api/auth/token");
-    console.log(res)
-    const resData = await res.json();
+    const resData:any = await fetch('http://localhost:3000/api/auth/token',{method:'get'});
     const token = resData?.token;
 
     config.headers.Authorization = "Bearer " + token;
