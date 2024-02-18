@@ -5,15 +5,14 @@ const axiosInstance = axios.create({
   baseURL,
 });
 
-const notProtectedRoutes = ["/login", "/signup"];
+const notProtectedRoutes = ["/user/login", "/user/signup"];
 
 axiosInstance.interceptors.request.use(
   async (config) => {
     if (notProtectedRoutes.includes(config.url || "")) {
       return config;
     }
-    const res = await fetch("/api/auth/token");
-    const resData = await res.json();
+    const resData:any = await fetch('http://localhost:3000/api/auth/token',{method:'get'});
     const token = resData?.token;
 
     config.headers.Authorization = "Bearer " + token;

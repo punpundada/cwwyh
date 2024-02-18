@@ -15,6 +15,7 @@ export const loginService = cache(async (data: ILoginReq) => {
       data
     );
     if (res.data.isSuccess) {
+      // console.log(res.data.data.accessToken)
       await storeToken({ token: res.data.data.accessToken });
     }
     return res.data;

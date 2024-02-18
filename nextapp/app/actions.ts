@@ -1,4 +1,4 @@
-"use server";
+"use server"
 
 import { cookies } from "next/headers";
 
@@ -13,7 +13,7 @@ export async function storeToken(request: StoreTokenRequest) {
     httpOnly: true,
     sameSite: "strict",
     secure: true,
-    expires:3600000,
+    // expires:3600000,
   });
 }
 

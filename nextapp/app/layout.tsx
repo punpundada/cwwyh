@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import NavBar from "@/components/navbar/NavBar";
 import { cn } from "@/lib/utils";
+import getAllRecipeService from "@/services/recipeService";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,6 +19,8 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  //prefetching the recipes query
+  // getAllRecipeService(0,undefined)
   return (
     <html lang="en">
       <body className={cn(inter.className,"w-screen h-screen")}>
