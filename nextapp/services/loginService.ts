@@ -1,4 +1,4 @@
-import { storeToken } from "@/app/actions";
+import { storeToken, testCookies } from "@/app/actions";
 import axiosInstance from "@/constants/axiosInstance";
 import { ApiRes } from "@/types/ApiRes";
 import { ILoginReq } from "@/types/loginReq";
@@ -15,8 +15,8 @@ export const loginService = cache(async (data: ILoginReq) => {
       data
     );
     if (res.data.isSuccess) {
-      // console.log(res.data.data.accessToken)
       await storeToken({ token: res.data.data.accessToken });
+      testCookies()
     }
     return res.data;
   } catch (error) {

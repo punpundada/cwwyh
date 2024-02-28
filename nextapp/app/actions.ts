@@ -17,6 +17,15 @@ export async function storeToken(request: StoreTokenRequest) {
   });
 }
 
+export async function testCookies(){
+  cookies().set({
+    name:'test',
+    value:"Test Cookie",
+    httpOnly:true,
+    sameSite:'strict',
+  })
+}
+
 export const deleteToken = async () => {
   const res = cookies().delete("accessToken");
 };
