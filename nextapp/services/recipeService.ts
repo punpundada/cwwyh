@@ -8,7 +8,7 @@ export interface IRecipeRes {
   message: string;
 }
 
-const getAllRecipeService = cache(
+export const getAllRecipeService = cache(
   async (
     page: string | string[] | 0,
     search: string | string[] | undefined
@@ -37,4 +37,21 @@ const getAllRecipeService = cache(
   }
 );
 
-export default getAllRecipeService;
+export interface IReciepById{
+  recipes:IRecipe
+}
+
+
+export const getRecipeById = cache(async(id:string)=>{
+  try {
+    const data =await axiosInstance.get<ApiRes<IReciepById>>(`recipe/get/${id}`)
+    if(data.data.isSuccess){
+      return data.data
+    }
+    return undefined
+  } catch (error) {
+    console.error(error);
+    return undefined
+  }
+})
+

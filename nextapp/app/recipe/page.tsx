@@ -1,8 +1,7 @@
-// 'use client'
 import Container from "@/components/Container";
 import RecipeCard from "@/components/RecipeCard";
 import SearchRecipe from "@/components/SearchRecipe";
-import getAllRecipeService from "@/services/recipeService";
+import {getAllRecipeService} from "@/services/recipeService";
 
 const RecipePage = async ({
   searchParams,
@@ -22,7 +21,7 @@ const RecipePage = async ({
             <RecipeCard {...x} key={x._id}  />
         ))}
       </Container>
-      <Container className="w-1/4 h-min md:h-full mt-[10rem] md:mt-0 static">
+      <Container className="w-1/4 h-min md:h-full mt-[10rem] md:mt-0 static md:p-8">
         <SearchRecipe/>
       </Container>
     </Container>
