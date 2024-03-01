@@ -17,7 +17,7 @@ export function RecipeCarousel() {
   );
   return (
     <Carousel
-      className="w-full max-w-xs"
+      className="w-3/4 md:w-full max-w-md min-w-max"
       opts={{ loop: true }}
       plugins={[plugin.current]}
       onMouseEnter={plugin.current.stop}
