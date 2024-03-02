@@ -26,7 +26,10 @@ export function RecipeCarousel() {
       <CarouselContent>
         {recipe?.imgUrls?.map((item, index) => {
           return (
-            <CarouselItem key={index} className="">
+            <CarouselItem
+              key={index}
+              className="pl-1 md:basis-1/2 lg:basis-1/3"
+            >
               <div className="p-1">
                 <Card>
                   <CardContent className="flex aspect-square items-center justify-center p-6 relative ">
