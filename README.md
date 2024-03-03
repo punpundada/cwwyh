@@ -1,7 +1,7 @@
-Welcome to [Your Cooking Website Name]
+Welcome to Cook With What You Have
 About
 
-Welcome to [Your Cooking Website Name] – your go-to destination for discovering and sharing delicious recipes! Whether you're a seasoned chef or a kitchen novice, our platform is designed to inspire and simplify your culinary journey. Explore a vast collection of mouthwatering recipes, and take advantage of our unique feature that allows you to find recipes based on the ingredients you have at hand.
+Welcome to Cook With What You Have – your go-to destination for discovering and sharing delicious recipes! Whether you're a seasoned chef or a kitchen novice, our platform is designed to inspire and simplify your culinary journey. Explore a vast collection of mouthwatering recipes, and take advantage of our unique feature that allows you to find recipes based on the ingredients you have at hand.
 Getting Started
 Browse Recipes
 
@@ -25,6 +25,6 @@ Collaborate and Connect
 Connect with other foodies, exchange tips, and collaborate on culinary adventures. Join the conversation in our forums, share your cooking triumphs (and challenges), and build a network of like-minded individuals who share your passion for great food.
 Support and Feedback
 
-Have a question, suggestion, or just want to say hello? Reach out to our support team through the "Contact Us" page. We value your feedback and are continuously working to enhance your cooking experience on [Your Cooking Website Name].
+Have a question, suggestion, or just want to say hello? Reach out to our support team through the "Contact Us" page. We value your feedback and are continuously working to enhance your cooking experience on Cook With What You Have.
 
 Happy cooking! 🍽️👩‍🍳👨‍🍳
