@@ -20,3 +20,11 @@ export function newAbortSignal(timeoutMs: number) {
   };
   return abortController.signal;
 }
+
+
+export const handleSmoothScrollById = (dockId:string) => {
+  const secondElement = document.getElementById(dockId);
+  if (secondElement) {
+    secondElement.scrollIntoView({ behavior: "smooth" });
+  }
+};

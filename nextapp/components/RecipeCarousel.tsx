@@ -10,11 +10,18 @@ import Image from "next/image";
 import { useRecipeStore } from "@/store/recipe-store";
 import Autoplay from "embla-carousel-autoplay";
 import React from "react";
-export function RecipeCarousel() {
+
+interface RecipeCarouselProps{
+  handleImageIndex: (index: number) => void
+}
+
+export function RecipeCarousel({handleImageIndex}:RecipeCarouselProps) {
   const recipe = useRecipeStore((s) => s.recipe);
+
   const plugin = React.useRef(
     Autoplay({ delay: 2000, stopOnMouseEnter: true })
   );
+
   return (
     <Carousel
       className="w-3/4 md:w-full max-w-md min-w-max"
@@ -28,7 +35,8 @@ export function RecipeCarousel() {
           return (
             <CarouselItem
               key={index}
-              className="pl-1 md:basis-1/2 lg:basis-1/3"
+              className="pl-1 basis-[100%] md:basis-1/2 lg:basis-1/3"
+              onClick={()=>handleImageIndex(index)}
             >
               <div className="p-1">
                 <Card>
