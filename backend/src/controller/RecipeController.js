@@ -1,23 +1,32 @@
 const { Constants } = require("../Constants");
 const RecipeModel = require("../models/RecipeModel");
 const User = require("../models/UserModel");
-
+const { IngredientModel } = require("../models/IngredientModel");
+const DifficultyLevelModel = require('../models/DifficultyLevel');
+const {getModifiedRecipe} = require('../lib/recipe')
 const addRecipe = async (req, res) => {
   try {
-    const { recipeName, ingredientsList, prepTime, difficultyLevel, imgUrls,description ,steps  } =
-      req.body;
+    const {
+      recipeName,
+      ingredientsList,
+      prepTime,
+      difficultyLevel,
+      imgUrls,
+      description,
+      steps,
+    } = req.body;
     const user = req.user;
     const userId = user.id;
     if (
-      !recipeName ||
-      !ingredientsList ||
-      !prepTime ||
-      !difficultyLevel ||
-      !imgUrls ||
-      !Array.isArray(imgUrls) ||
-      imgUrls.length === 0 || 
-      steps,
-      !Array.isArray(steps)
+      (!recipeName ||
+        !ingredientsList ||
+        !prepTime ||
+        !difficultyLevel ||
+        !imgUrls ||
+        !Array.isArray(imgUrls) ||
+        imgUrls.length === 0 ||
+        steps,
+      !Array.isArray(steps))
     ) {
       return res.status(Constants.VALIDATION_ERROR).json({
         isSuccess: false,
@@ -53,7 +62,7 @@ const addRecipe = async (req, res) => {
       prepTime,
       difficultyLevel,
       imgUrls,
-      steps
+      steps,
     });
 
     if (newRecipe) {
@@ -232,21 +241,43 @@ const deleteOneImage = async (req, res) => {
 const getAllRecipes = async (req, res) => {
   const perPageItems = 9;
   try {
-    let query={}
+    let query = {};
     const pageNumber = req.query.page || 0;
-    const searchRecipe = req.query.search 
-    if(searchRecipe){
-      const searchRecipeRegex = new RegExp(searchRecipe, 'i');
-      query.recipeName={$regex:searchRecipeRegex};
-      // console.log(searchRecipeRegex)
+    const searchRecipe = req.query.search;
+    if (searchRecipe) {
+      const searchRecipeRegex = new RegExp(searchRecipe, "i");
+      query.recipeName = { $regex: searchRecipeRegex };
     }
+
     const foundRecipes = await RecipeModel.find(query)
       .skip(perPageItems * pageNumber)
-      .limit(perPageItems);
-    if (foundRecipes) {
+      .limit(perPageItems)
+      .populate({
+        path: "userId",
+        model: User,
+        select: ["firstName", "lastName"],
+      })
+      .populate({
+        path: "ingredientsList.ingredientId",
+        model: IngredientModel,
+        select: ["ingredientName"],
+      })
+      .populate({
+        path: "difficultyLevel",
+        model: DifficultyLevelModel,
+        select: ["level"],
+      })
+      .lean()
+      .exec();
+
+    const modifiedRecipes = foundRecipes?.map((recipe) => {
+      return getModifiedRecipe(recipe)
+    });
+
+    if (modifiedRecipes) {
       return res.status(Constants.OK).json({
         isSuccess: true,
-        data: { recipes: foundRecipes, message: `Recipe Found` },
+        data: { recipes: modifiedRecipes, message: `Recipe Found` },
       });
     } else {
       return res.status(Constants.FORBIDDEN).json({
@@ -265,11 +296,31 @@ const getAllRecipes = async (req, res) => {
 const getOneRecipe = async (req, res) => {
   const recipeId = req.params.id;
   try {
-    const foundRecipe = await RecipeModel.findById(recipeId);
-    if (foundRecipe) {
+    const foundRecipe = await RecipeModel.findById(recipeId)
+    .populate({
+      path: "userId",
+      model: User,
+      select: ["firstName", "lastName"],
+    })
+    .populate({
+      path: "ingredientsList.ingredientId",
+      model: IngredientModel,
+      select: ["ingredientName"],
+    })
+    .populate({
+      path: "difficultyLevel",
+      model: DifficultyLevelModel,
+      select: ["level"],
+    })
+    .lean()
+    .exec();
+
+    const modifiedRecipe = getModifiedRecipe(foundRecipe);
+
+    if (modifiedRecipe) {
       return res.status(Constants.OK).json({
         isSuccess: true,
-        data: { recipes: foundRecipe, message: `Recipe Found` },
+        data: { recipes: modifiedRecipe, message: `Recipe Found` },
       });
     } else {
       return res.status(Constants.VALIDATION_ERROR).json({

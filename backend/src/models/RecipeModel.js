@@ -12,6 +12,10 @@ const RecipeSchema = mongoose.Schema(
       ref: "User",
       required: [true, "UserId is a Required Field"],
     },
+    userName:{
+      type: String,
+      required:false
+    },
     ingredientsList: [
       {
         ingredientId: {
