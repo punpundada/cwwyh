@@ -1,8 +1,9 @@
 import axiosInstance from "@/constants/axiosInstance";
+import { newAbortSignal } from "@/lib/utils";
 import { ApiRes } from "@/types/ApiRes";
 import { IRecipe } from "@/types/IRecipe";
 import { cache } from "react";
-
+const controller = new AbortController();
 export interface IRecipeRes {
   recipes: IRecipe[];
   message: string;
@@ -41,10 +42,11 @@ export interface IReciepById{
   recipes:IRecipe
 }
 
-
 export const getRecipeById = cache(async(id:string)=>{
   try {
-    const data =await axiosInstance.get<ApiRes<IReciepById>>(`recipe/get/${id}`)
+    const data =await axiosInstance.get<ApiRes<IReciepById>>(`recipe/get/${id}`,{
+      signal:newAbortSignal(5000)
+    })
     if(data.data.isSuccess){
       return data.data
     }
