@@ -1,0 +1,32 @@
+import mongoose  from "mongoose";
+
+const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+const UserSchema =new mongoose.Schema(
+  {
+    firstName: {
+      type: String,
+      required: [true, "Firstname is a Required Field"],
+    },
+    lastName: {
+      type: String,
+      required: [true, "Lastname is a Required Field"],
+    },
+    email: {
+      type: String,
+      required: [true, "Lastname is a Required Field"],
+      match: emailRegex,
+    },
+    password: {
+      type: String,
+    },
+    imgUrl: {
+      type: String,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+const User = mongoose.model("User", UserSchema);
+export default User;
