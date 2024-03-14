@@ -5,6 +5,7 @@
         "target": "ES2022",
         "sourceMap": true,
         "outDir": "dist",
+        "noImplicitAny": false
     },
     "include": ["src/**/*.ts","src/**/*.d.ts"]
 }
