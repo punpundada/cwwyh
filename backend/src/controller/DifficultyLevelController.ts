@@ -76,7 +76,10 @@ const getAllLevels = async (req, res) => {
         },
       });
     }
-  } catch (error) {}
+  } catch (error) {
+    console.error(error);
+    
+  }
 };
 
 export { addLevel, getAllLevels };
