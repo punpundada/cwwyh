@@ -1,0 +1,14 @@
+version: '3.8'
+#version of the docker compose
+
+services:
+  backend:
+    build: ./backend
+    container_name: cwwyh_backend
+    ports:
+      - '9001:9001'
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend:/app
+      - ./backend/node_modules:/app/node_modules
