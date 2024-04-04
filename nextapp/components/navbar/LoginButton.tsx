@@ -18,7 +18,7 @@ const LoginButton = () => {
   
   useEffect(()=>{
     const doAction = async()=>{
-      if(isLoggedIn){
+      if(!isLoggedIn){
         router.push('/')
       }
     }
