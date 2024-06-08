@@ -1,47 +1,35 @@
 import { Constants } from "../Constants.js";
-import RecipeModel from "../models/RecipeModel.js";
+import RecipeModel, {
+  RecipeType,
+  zodRecipeSchema,
+} from "../models/RecipeModel.js";
 import User from "../models/UserModel.js";
-import  {IngredientModel}  from "../models/IngredientModel.js";
-import DifficultyLevelModel from '../models/DifficultyLevel.js';
-import { getModifiedRecipe } from '../lib/recipe.js';
+import { IngredientModel } from "../models/IngredientModel.js";
+import DifficultyLevelModel from "../models/DifficultyLevel.js";
+import { getModifiedRecipe } from "../lib/recipe.js";
+import { Request, Response } from "express";
+import { ReqUser } from "../types/user.js";
+import { error } from "console";
+import { ZodError } from "zod";
 
-
-const addRecipe = async (req, res) => {
+const addRecipe = async (
+  req: Request<any, any, ReqUser<RecipeType>>,
+  res: Response
+) => {
   try {
+
     const {
       recipeName,
+      userId,
       ingredientsList,
-      prepTime,
+      description,
       difficultyLevel,
       imgUrls,
-      description,
+      prepTime,
       steps,
-    } = req.body;
-    const user = req.user;
-    const userId = user.id;
-    if (
-      (!recipeName ||
-        !ingredientsList ||
-        !prepTime ||
-        !difficultyLevel ||
-        !imgUrls ||
-        !Array.isArray(imgUrls) ||
-        imgUrls.length === 0 ||
-        steps,
-      !Array.isArray(steps))
-    ) {
-      return res.status(Constants.VALIDATION_ERROR).json({
-        isSuccess: false,
-        data: { message: "Missing Fields" },
-      });
-    }
+      userName,
+    } = zodRecipeSchema.parse(req.body.reqBody);
 
-    if (!Array.isArray(ingredientsList)) {
-      return res.status(Constants.VALIDATION_ERROR).json({
-        isSuccess: false,
-        data: { message: `ingredientsList should be a array type` },
-      });
-    }
     const foundRecipe = await RecipeModel.findOne({
       recipeName: recipeName,
       userId,
@@ -79,9 +67,10 @@ const addRecipe = async (req, res) => {
       });
     }
   } catch (error) {
+    const errorMessages = JSON.parse(error.message).map(error => error.message);
     return res
       .status(Constants.SERVER_ERROR)
-      .json({ isSuccess: false, data: { message: error.message } });
+      .json({ isSuccess: false, data: { message:errorMessages , issues:error.issues} });
   }
 };
 
@@ -215,7 +204,7 @@ const deleteOneImage = async (req, res) => {
       });
     }
 
-    let imageIndex =1
+    let imageIndex = 1;
     // const imageIndex = foundRecipe.imgUrls.findIndex((img) => {
     //   return img._id.toString() === imageId;
     // });
@@ -276,7 +265,7 @@ const getAllRecipes = async (req, res) => {
       .exec();
 
     const modifiedRecipes = foundRecipes?.map((recipe) => {
-      return getModifiedRecipe(recipe)
+      return getModifiedRecipe(recipe);
     });
 
     if (modifiedRecipes) {
@@ -302,23 +291,23 @@ const getOneRecipe = async (req, res) => {
   const recipeId = req.params.id;
   try {
     const foundRecipe = await RecipeModel.findById(recipeId)
-    .populate({
-      path: "userId",
-      model: User,
-      select: ["firstName", "lastName"],
-    })
-    .populate({
-      path: "ingredientsList.ingredientId",
-      model: IngredientModel,
-      select: ["ingredientName"],
-    })
-    .populate({
-      path: "difficultyLevel",
-      model: DifficultyLevelModel,
-      select: ["level"],
-    })
-    .lean()
-    .exec();
+      .populate({
+        path: "userId",
+        model: User,
+        select: ["firstName", "lastName"],
+      })
+      .populate({
+        path: "ingredientsList.ingredientId",
+        model: IngredientModel,
+        select: ["ingredientName"],
+      })
+      .populate({
+        path: "difficultyLevel",
+        model: DifficultyLevelModel,
+        select: ["level"],
+      })
+      .lean()
+      .exec();
 
     const modifiedRecipe = getModifiedRecipe(foundRecipe);
 

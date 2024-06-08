@@ -1,8 +1,9 @@
-import mongoose from "mongoose";
-const {Schema} = mongoose
-// import { IngredientSchema } from "./IngredientModel.js";
+import mongoose, { Types, InferSchemaType } from "mongoose";
+const { Schema } = mongoose;
+import { z } from 'zod';
 
-const RecipeSchema = new mongoose.Schema(
+
+const RecipeSchema = new Schema(
   {
     recipeName: {
       type: String,
@@ -13,9 +14,9 @@ const RecipeSchema = new mongoose.Schema(
       ref: "User",
       required: [true, "UserId is a Required Field"],
     },
-    userName:{
+    userName: {
       type: String,
-      required:false
+      required: false,
     },
     ingredientsList: [
       {
@@ -27,10 +28,10 @@ const RecipeSchema = new mongoose.Schema(
         quantity: String,
       },
     ],
-    description:{
-      type:String,
-      required:[true,'Recipe Description is a Required Field'],
-      minlength: [150, 'Description should be at least 10 characters long.'],
+    description: {
+      type: String,
+      required: [true, "Recipe Description is a Required Field"],
+      minlength: [150, "Description should be at least 10 characters long."],
     },
     prepTime: {
       type: String,
@@ -48,19 +49,45 @@ const RecipeSchema = new mongoose.Schema(
         },
       },
     ],
-    steps:[
-     { 
-      step:{
-        type:String,
-        required:[true,'Steps is a required field']
-      }
-    }
-    ]
+    steps: [
+      {
+        step: {
+          type: String,
+          required: [true, "Steps is a required field"],
+        },
+      },
+    ],
   },
   {
     timestamps: true,
   }
 );
 
+export type RecipeType = InferSchemaType<typeof RecipeSchema>;
+
 const RecipeModel = mongoose.model("Recipes", RecipeSchema);
 export default RecipeModel;
+
+
+export const zodRecipeSchema = z.object({
+  recipeName:z.string({required_error:'Recipe name is a required field'}),
+  userId:z.string({required_error:'User id is a required field'}),
+  userName:z.string({required_error:'User name is a required field'}),
+  ingredientsList:z.array(
+    z.object({
+      ingredientId:z.string({required_error:'ingredient id is a required field'}),
+      quantity:z.string({required_error:'quantity is a required field'})
+    })
+  ).min(1,'Minimum ingredients length is 1'),
+  description:z.string().min(150,'Description should be minimum 150 words'),
+  prepTime:z.string({required_error:'Prep time is a required field'}),
+  difficultyLevel:z.string({required_error:'Difficulty level is a required field'}),
+  imgUrls:z.array(z.object({
+    imgUrl:z.string({required_error:"Image URL is a required field"})
+  })).min(1,{message:'Min step is 1'}),
+  steps:z.array(
+    z.object({
+      step:z.string({required_error:'Step is a required field'})
+    })
+  ).min(1,{message:'at least 1 step is required'})
+})

@@ -221,7 +221,6 @@ const setProfilePicture = async(req,res)=>{
 
 const getProfilePicture = async(req,res)=>{
   const user = req.user;
-  console.log(user)
   try {
     const foundUser = await User.findById({_id:user.id})
     return res
