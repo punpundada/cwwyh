@@ -1,7 +1,11 @@
+export type User={
+  userId:string,
+  userName:string
+}
 export interface IRecipe {
     _id: string;
     recipeName: string;
-    userId: string;
+    user:User ;
     ingredientsList: IngredientsList[];
     prepTime: string;
     description:string;

@@ -1,52 +1,74 @@
 "use client";
-import { RecipeCarousel } from "@/components/RecipeCarousel";
 import Container from "@/components/Container";
 import { useRecipeStore } from "@/store/recipe-store";
-import { useLayoutEffect, useState } from "react";
-import RecipeDescCard from "@/components/RecipeDescCard";
-import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { useLayoutEffect, useRef, useState } from "react";
 import Image from "next/image";
+import BreadCrumbs from "@/components/BreadCrumbs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Label } from "@radix-ui/react-label";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { ChevronDown } from "lucide-react";
+
 
 const RecipePage = ({ params }: { params: { id: string } }) => {
   const [imageIndex, setImageIndex] = useState(0);
+  const [selectedTab, setSelectedTab] = useState<1 | 2>(1);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
   const getRecipeById = useRecipeStore((s) => s.getRecipeById);
   const recipe = useRecipeStore((s) => s.recipe);
-
-
   const handleImageIndex = (index: number) => {
     setImageIndex(index);
   };
+
+  const handleScrollDown = () => {
+    if (scrollAreaRef.current) {
+      console.log("inside if");
+      scrollAreaRef.current.scrollBy({ top: -100, behavior: "smooth" });
+    }
+  };
+
   useLayoutEffect(() => {
     const fethData = async () => {
       await getRecipeById(params.id);
     };
     fethData();
   }, [getRecipeById, params.id]);
-
+  if (!recipe) {
+    return <>something went wrong</>;
+  }
+  
   return (
-    <>
-      <Container className="xl:p-1 md:mt-5 lg:mt-0 p-4 md:p-0 flex-col-reverse md:flex-row relative">
-        <Container className="w-full md:w-[65%] flex-col p-0 md:p-10 lg:p-16 gap-1 md:gap-4">
-          <Container className="hidden md:flex h-3/5 relative w-2/3">
-            <Image
-              src={recipe?.imgUrls[imageIndex].imgUrl ?? ""}
-              alt="recipe image"
-              fill
-              className="object-cover rounded-2xl"
-            />
-          </Container>
-          <Container className="h-1/4">
-            <RecipeCarousel handleImageIndex={handleImageIndex} />
-          </Container>
-        </Container>
-        <Container className="w-full md:w-[35%] m-6">
-          <RecipeDescCard />
-        </Container>
+    <div className="h-screen w-full">
+      <BreadCrumbs names={["Recipe","id"]} />
+      <Container className="relative h-2/5 w-full md:w-3/5">
+        <Image
+          src={recipe?.imgUrls[0].imgUrl}
+          alt={recipe.recipeName?? ''}
+          fill
+          className="object-cover rounded-t-xl"
+        />
       </Container>
-      <Container component="aside" id="second" className="h-screen">
-        hello
-      </Container>
-    </>
+      <Container className="p-4 flex-col h-auto justify-start items-start md:w-3/5 border gap-4">
+        <p className="text-3xl font-bold">{recipe?.recipeName}</p>
+        <span className="italic py-3">Recipe by {recipe?.user.userName}</span>
+          <Separator/>
+        <Container className="h-auto justify-between items-start text-sm md:px-36">
+          
+        </Container>
+      </Container> 
+    </div>
   );
 };
 

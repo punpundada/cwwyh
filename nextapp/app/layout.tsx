@@ -30,11 +30,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="w-full h-[9%] focus-visible:outline-border">
           <Toaster />
+          <main className="">
             <NavBar />
-          </div>
-          <main className="h-screen">{children}</main>
+            {children}
+          </main>
         </ThemeProvider>
       </body>
     </html>
