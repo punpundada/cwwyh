@@ -1,5 +1,5 @@
-import CuisineModel from "../models/CuisineModel.js";
-import { Constants } from "../Constants.js";
+import CuisineModel from "../models/CuisineModel";
+import { Constants } from "../Constants";
 
 const addCuisine = async (req, res) => {
   const { cuisineName } = req.body;

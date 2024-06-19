@@ -1,5 +1,5 @@
-import { Constants } from "../Constants.js";
-import  {IngredientModel}  from "../models/IngredientModel.js";
+import { Constants } from "../Constants";
+import  {IngredientModel}  from "../models/IngredientModel";
 
 const addOneIngredient = async (req, res) => {
   try {

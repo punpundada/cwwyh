@@ -1,7 +1,8 @@
-import User from "../models/UserModel.js";
+import User from "../models/UserModel";
 import { hash, compare } from "bcrypt";
-import { Constants } from "../Constants.js";
+import { Constants } from "../Constants";
 import jwt from "jsonwebtoken";
+import env from "../lib/env";
 
 
 const userSignup = async (req, res) => {
@@ -52,7 +53,7 @@ const userSignup = async (req, res) => {
         .json({ isSuccess: false, data: { message: "Validation Error" } });
     }
   } catch (error) {
-    console.log(error.message);
+    console.error(error.message);
     return res
       .status(Constants.SERVER_ERROR)
       .json({ isSuccess: false, data: { message: error.message } });
@@ -96,7 +97,7 @@ const deleteUser = async (req, res) => {
         .json({ isSuccess: false, data: { message: `Something Went Wrong` } });
     }
   } catch (error) {
-    console.log(error.message);
+    console.error(error.message);
     return res
       .status(Constants.SERVER_ERROR)
       .json({ isSuccess: false, data: { message: error.message } });
@@ -126,7 +127,7 @@ const userLogin = async (req, res) => {
             imgUrl:user.imgUrl
           },
         },
-        process.env.ACCESS_TOKEN_SECRET,
+        env.ACCESS_TOKEN_SECRET,
         {
           expiresIn: "60m",
         }

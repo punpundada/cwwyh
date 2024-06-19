@@ -1,9 +1,10 @@
 import mongoose  from "mongoose";
+import env from "../lib/env";
 
 
 const dbConnection = async()=>{
     try {
-        const connect = await mongoose.connect(process.env.MONGODB_CONNECTION_STRING);
+        const connect = await mongoose.connect(env.MONGODB_CONNECTION_STRING);
         console.log(
             `Database Connected`,
             connect.connection.host,

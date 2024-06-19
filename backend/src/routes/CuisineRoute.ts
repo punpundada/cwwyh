@@ -1,6 +1,6 @@
 import { Router } from "express";
-import ValidateToken from "../middleware/ValidationTokenHandler.js";
-import { addCuisine, getAllCuisine, updateCuisine, deleteCuisine } from "../controller/CuisineController.js";
+import ValidateToken from "../middleware/ValidationTokenHandler";
+import { addCuisine, getAllCuisine, updateCuisine, deleteCuisine } from "../controller/CuisineController";
 const cuisineRouter = Router();
 
 cuisineRouter.post("/add", addCuisine);

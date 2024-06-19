@@ -6,8 +6,8 @@ import {
   getAllUserRecipe,
   setProfilePicture,
   getProfilePicture,
-} from "../controller/UserController.js";
-import ValidateToken from "../middleware/ValidationTokenHandler.js";
+} from "../controller/UserController";
+import ValidateToken from "../middleware/ValidationTokenHandler";
 
 const userRouter = Router();
 
