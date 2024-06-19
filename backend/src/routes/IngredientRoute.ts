@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { addOneIngredient, getAllIngredients, deleteIngredient, updateIngredient } from "../controller/IngredientController.js";
-import ValidateToken from "../middleware/ValidationTokenHandler.js";
+import { addOneIngredient, getAllIngredients, deleteIngredient, updateIngredient } from "../controller/IngredientController";
+import ValidateToken from "../middleware/ValidationTokenHandler";
 
 const IngredientRouter = Router();
 

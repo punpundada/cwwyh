@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addLevel, getAllLevels } from "../controller/DifficultyLevelController.js";
+import { addLevel, getAllLevels } from "../controller/DifficultyLevelController";
 
 const DifficuiltyLevelRoute = Router();
 

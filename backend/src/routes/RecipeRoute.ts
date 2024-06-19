@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { addRecipe, deleteRecipe, getRecipesByIngredients, addRecipeImageUrl, deleteOneImage, getAllRecipes, getOneRecipe } from '../controller/RecipeController.js';
-import ValidateToken from '../middleware/ValidationTokenHandler.js';
+import { addRecipe, deleteRecipe, getRecipesByIngredients, addRecipeImageUrl, deleteOneImage, getAllRecipes, getOneRecipe } from '../controller/RecipeController';
+import ValidateToken from '../middleware/ValidationTokenHandler';
 
 const RecipieRouter = Router();
 
