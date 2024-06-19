@@ -1,14 +1,14 @@
-import { Constants } from "../Constants.js";
+import { Constants } from "../Constants";
 import RecipeModel, {
   RecipeType,
   zodRecipeSchema,
-} from "../models/RecipeModel.js";
-import User from "../models/UserModel.js";
-import { IngredientModel } from "../models/IngredientModel.js";
-import DifficultyLevelModel from "../models/DifficultyLevel.js";
-import { getModifiedRecipe } from "../lib/recipe.js";
+} from "../models/RecipeModel";
+import User from "../models/UserModel";
+import { IngredientModel } from "../models/IngredientModel";
+import DifficultyLevelModel from "../models/DifficultyLevel";
+import { getModifiedRecipe } from "../lib/recipe";
 import { Request, Response } from "express";
-import { ReqUser } from "../types/user.js";
+import { ReqUser } from "../types/user";
 import { error } from "console";
 import { ZodError } from "zod";
 
@@ -58,7 +58,7 @@ const addRecipe = async (
     if (newRecipe) {
       return res.status(Constants.CREATED).json({
         isSuccess: true,
-        data: { message: `New Recipe with id:${newRecipe._id} is created ` },
+        data: { message: `New Recipe with id:${newRecipe?._id} is created ` },
       });
     } else {
       return res.status(Constants.SERVER_ERROR).json({
@@ -87,7 +87,7 @@ const deleteRecipe = async (req, res) => {
     if (deletadRecipe) {
       return res.status(Constants.OK).json({
         isSuccess: true,
-        data: { message: `Recipe with ${deletadRecipe._id} id Deletad` },
+        data: { message: `Recipe with ${deletadRecipe?._id} id Deletad` },
       });
     } else {
       return res
@@ -242,27 +242,26 @@ const getAllRecipes = async (req, res) => {
       const searchRecipeRegex = new RegExp(searchRecipe, "i");
       query.recipeName = { $regex: searchRecipeRegex };
     }
-
     const foundRecipes = await RecipeModel.find(query)
       .skip(perPageItems * pageNumber)
       .limit(perPageItems)
-      .populate({
+      ?.populate({
         path: "userId",
         model: User,
         select: ["firstName", "lastName"],
       })
-      .populate({
+      ?.populate({
         path: "ingredientsList.ingredientId",
         model: IngredientModel,
         select: ["ingredientName"],
       })
-      .populate({
+      ?.populate({
         path: "difficultyLevel",
         model: DifficultyLevelModel,
         select: ["level"],
       })
-      .lean()
-      .exec();
+      ?.lean()
+      ?.exec();
 
     const modifiedRecipes = foundRecipes?.map((recipe) => {
       return getModifiedRecipe(recipe);
@@ -280,6 +279,7 @@ const getAllRecipes = async (req, res) => {
       });
     }
   } catch (error) {
+    console.error(error)
     return res.status(Constants.SERVER_ERROR).json({
       isSuccess: false,
       data: { message: error.message },
