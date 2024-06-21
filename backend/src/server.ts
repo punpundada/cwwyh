@@ -9,6 +9,7 @@ import cuisineRouter from './routes/CuisineRoute';
 import DifficuiltyLevelRoute from './routes/DifficultyLevelRoute';
 import  env  from './lib/env';
 import { commentRoute } from './routes/CommentRoute';
+import { likeRoute } from './routes/LikeRoute';
 
 const app = express();
 const port = env.PORT || 9002;
@@ -23,6 +24,7 @@ app.use('/api/recipe',RecipieRouter);
 app.use('/api/cuisine', cuisineRouter);
 app.use('/api/level', DifficuiltyLevelRoute);
 app.use('/api/comments', commentRoute);
+app.use('/api/likes', likeRoute);
 
 app.use((req,res)=>{
     res.status(Constants.NOT_FOUND).json({ message: 'URI Not Found' });
