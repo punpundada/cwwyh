@@ -1,7 +1,6 @@
 import { Constants } from "../Constants";
 import RecipeModel, {
   RecipeType,
-  zodRecipeSchema,
 } from "../models/RecipeModel";
 import User from "../models/UserModel";
 import { IngredientModel } from "../models/IngredientModel";
@@ -11,6 +10,7 @@ import { Request, Response } from "express";
 import { ReqUser } from "../types/user";
 import { error } from "console";
 import { ZodError } from "zod";
+import { zodRecipeSchema } from "../types/recipe";
 
 const addRecipe = async (
   req: Request<any, any, ReqUser<RecipeType>>,
@@ -236,7 +236,7 @@ const getAllRecipes = async (req, res) => {
   const perPageItems = 9;
   try {
     let query = {} as any;
-    const pageNumber = req.query.page || 0;
+    const pageNumber = Math.abs(req.query.page) || 0;
     const searchRecipe = req.query.search;
     if (searchRecipe) {
       const searchRecipeRegex = new RegExp(searchRecipe, "i");
