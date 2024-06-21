@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import LikesModel from "../models/LikesModel";
 import { Constants } from "../Constants";
+import { getLikeCount } from "../service/likeService";
+import { Res } from "../types/res";
 
 export const likeRecipe = async (
   req: Request<unknown, unknown, { userId: string; recipeId: string }>,
@@ -23,6 +25,14 @@ export const likeRecipe = async (
       },
     });
   } catch (error) {
+    if(error.code.toString() === '11000' ){
+      return res.status(Constants.VALIDATION_ERROR).json({
+        isSuccess: false,
+        data: {
+          message: "Duplicate like by user",
+        },
+      })
+    }
     return res.status(Constants.SERVER_ERROR).json({
       isSuccess: false,
       data: {
@@ -42,18 +52,39 @@ export const removeLike = async (
       return res.status(Constants.VALIDATION_ERROR).json({
         isSuccess: false,
         data: {
-          message: "Like was not deleted",
+          message: "Like was not deleted or not found",
         },
       });
     }
     return res.status(Constants.OK).json({
       isSuccess: true,
       data: {
-        message: "Like deleted successfully",
+        message: "Like removed successfully",
       },
     });
   } catch (error) {
     return res.status(Constants.SERVER_ERROR).json({
+      isSuccess: false,
+      data: {
+        message: error.message,
+      },
+    });
+  }
+};
+
+export const likeCount = async (
+  req: Request<{ recipeId: string }>,
+  res: Response<Res<number>>
+) => {
+  try {
+    const count = await getLikeCount(req.params.recipeId);
+    return res.status(Constants.OK).json({
+      isSuccess: true,
+      data: { message: "Request was success", result: count },
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(Constants.VALIDATION_ERROR).json({
       isSuccess: false,
       data: {
         message: error.message,

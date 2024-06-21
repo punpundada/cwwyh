@@ -4,11 +4,10 @@ import { Constants } from "../Constants";
 import jwt from "jsonwebtoken";
 import env from "../lib/env";
 
-
 const userSignup = async (req, res) => {
   try {
     const { firstName, lastName, email, password, imgUrl } = req.body;
-    if (!firstName  || !email || !password ) {
+    if (!firstName || !email || !password) {
       res
         .status(Constants.VALIDATION_ERROR)
         .json({ isSuccess: false, data: { message: "Missing Fields" } });
@@ -34,8 +33,8 @@ const userSignup = async (req, res) => {
       firstName,
       lastName,
       email,
-      password:bcriptPassword,
-      imgUrl
+      password: bcriptPassword,
+      imgUrl,
     });
 
     if (user) {
@@ -44,7 +43,7 @@ const userSignup = async (req, res) => {
         data: {
           email,
           userId: user._id,
-          message:'User registred successfully'
+          message: "User registred successfully",
         },
       });
     } else {
@@ -83,14 +82,12 @@ const deleteUser = async (req, res) => {
     }
     const result = await User.deleteOne({ _id: id });
     if (result.deletedCount === 1) {
-      return res
-        .status(Constants.OK)
-        .json({
-          isSuccess: true,
-          data: {
-            message: `User with email : ${user.email} Deleted Succesfully`,
-          },
-        });
+      return res.status(Constants.OK).json({
+        isSuccess: true,
+        data: {
+          message: `User with email : ${user.email} Deleted Succesfully`,
+        },
+      });
     } else {
       return res
         .status(Constants.VALIDATION_ERROR)
@@ -107,13 +104,11 @@ const deleteUser = async (req, res) => {
 const userLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
-    if ((!email || !password)) {
-      return res
-        .status(Constants.VALIDATION_ERROR)
-        .json({
-          isSuccess: false,
-          data: { message: "Email and Password are Necessary" },
-        });
+    if (!email || !password) {
+      return res.status(Constants.VALIDATION_ERROR).json({
+        isSuccess: false,
+        data: { message: "Email and Password are Necessary" },
+      });
     }
     const user = await User.findOne({ email });
     if (user && (await compare(password, user.password))) {
@@ -122,9 +117,9 @@ const userLogin = async (req, res) => {
           user: {
             id: user._id,
             email: user.email,
-            firstName:user.firstName,
-            lastName:user.lastName,
-            imgUrl:user.imgUrl
+            firstName: user.firstName,
+            lastName: user.lastName,
+            imgUrl: user.imgUrl,
           },
         },
         env.ACCESS_TOKEN_SECRET,
@@ -133,21 +128,27 @@ const userLogin = async (req, res) => {
         }
       );
 
-      return res
-        .status(Constants.OK)
-        .json({
-          isSuccess: true,
-          data: { accessToken, message: "Logged in Successfully" },
-        });
-    } else {
-      return res
-        .status(Constants.NOT_FOUND)
-        .json({
-          isSuccess: false,
-          data: {
-            message: `User with email : ${email} and password : ${password} not found`,
+      return res.status(Constants.OK).json({
+        isSuccess: true,
+        data: {
+          accessToken,
+          message: "Logged in Successfully",
+          user: {
+            id: user._id,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            imgUrl: user.imgUrl,
           },
-        });
+        },
+      });
+    } else {
+      return res.status(Constants.NOT_FOUND).json({
+        isSuccess: false,
+        data: {
+          message: `User with email : ${email} and password : ${password} not found`,
+        },
+      });
     }
   } catch (error) {
     return res
@@ -156,82 +157,92 @@ const userLogin = async (req, res) => {
   }
 };
 
-const getAllUserRecipe=async(req,res)=>{
+const getAllUserRecipe = async (req, res) => {
   try {
     const user = req.user;
     const userId = user.id;
-    if(!userId){
+    if (!userId) {
       return res
         .status(Constants.VALIDATION_ERROR)
-        .json({ isSuccess: false, data: { message: `User id not Found`}});
-    };
+        .json({ isSuccess: false, data: { message: `User id not Found` } });
+    }
 
-    const allUserRecipies = await User.find({userId})
-    
-    if(allUserRecipies){
+    const allUserRecipies = await User.find({ userId });
+
+    if (allUserRecipies) {
       return res
         .status(Constants.OK)
-        .json({ isSuccess: true, data: { allUserRecipies,message: `Recipes of user with id ${userId} found`}});
-    }
-    else{
+        .json({
+          isSuccess: true,
+          data: { allUserRecipies, message: `Recipes of user with id ${userId} found` },
+        });
+    } else {
       return res
         .status(Constants.NOT_FOUND)
-        .json({ isSuccess: false, data: { message: `Recipes of user with id ${userId} not found`}});
+        .json({
+          isSuccess: false,
+          data: { message: `Recipes of user with id ${userId} not found` },
+        });
     }
   } catch (error) {
     return res
-    .status(Constants.NOT_FOUND)
-    .json({ isSuccess: false, data: { message:error.message}});
+      .status(Constants.NOT_FOUND)
+      .json({ isSuccess: false, data: { message: error.message } });
   }
 };
 
-const setProfilePicture = async(req,res)=>{
-  const {imgUrl} = req.body;
+const setProfilePicture = async (req, res) => {
+  const { imgUrl } = req.body;
   let user = req.user;
-  if(!imgUrl){
+  if (!imgUrl) {
     return res
-    .status(Constants.VALIDATION_ERROR)
-    .json({ isSuccess: false, data: { message: `Image URL not Found`}});
-  };
+      .status(Constants.VALIDATION_ERROR)
+      .json({ isSuccess: false, data: { message: `Image URL not Found` } });
+  }
   // user.imgUrl = imgUrl;
   const userId = user.id;
 
-
   try {
-    const foundUser = await User.findById({_id:userId});
-    const newUser = {foundUser,imgUrl:imgUrl};
-    const updateUser =await User.findByIdAndUpdate({_id:foundUser._id} , newUser,{new:true} );
-    if(updateUser){
+    const foundUser = await User.findById({ _id: userId });
+    const newUser = { foundUser, imgUrl: imgUrl };
+    const updateUser = await User.findByIdAndUpdate({ _id: foundUser._id }, newUser, {
+      new: true,
+    });
+    if (updateUser) {
       return res
-      .status(Constants.OK)
-      .json({ isSuccess: true, data: { message: `Image updated`}});
-    }
-    else{
+        .status(Constants.OK)
+        .json({ isSuccess: true, data: { message: `Image updated` } });
+    } else {
       return res
-      .status(Constants.SERVER_ERROR)
-      .json({ isSuccess: false, data: { message: `Image URL not updated`}});
+        .status(Constants.SERVER_ERROR)
+        .json({ isSuccess: false, data: { message: `Image URL not updated` } });
     }
-    
   } catch (error) {
     return res
       .status(Constants.SERVER_ERROR)
-      .json({ isSuccess: false, data: { message: error.message}});
+      .json({ isSuccess: false, data: { message: error.message } });
   }
-  
-}
+};
 
-const getProfilePicture = async(req,res)=>{
+const getProfilePicture = async (req, res) => {
   const user = req.user;
   try {
-    const foundUser = await User.findById({_id:user.id})
+    const foundUser = await User.findById({ _id: user.id });
     return res
-    .status(Constants.OK)
-    .json({ isSuccess: true, data: { imgUrl:foundUser.imgUrl, message:"Success" }});
+      .status(Constants.OK)
+      .json({ isSuccess: true, data: { imgUrl: foundUser.imgUrl, message: "Success" } });
   } catch (error) {
     return res
-    .status(Constants.SERVER_ERROR)
-    .json({ isSuccess: false, data: {  message:error.message }});
+      .status(Constants.SERVER_ERROR)
+      .json({ isSuccess: false, data: { message: error.message } });
   }
-}
+};
 
-export { userSignup, userLogin, deleteUser,getAllUserRecipe, setProfilePicture, getProfilePicture };
+export {
+  userSignup,
+  userLogin,
+  deleteUser,
+  getAllUserRecipe,
+  setProfilePicture,
+  getProfilePicture,
+};

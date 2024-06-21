@@ -27,5 +27,5 @@ export const commentSchema = new mongoose.Schema(
 
 commentSchema.index({authorId:1,recipeId:1},{unique:true})
 
-export type Comment = mongoose.InferSchemaType<typeof commentSchema>
+export type CommentModel = mongoose.InferSchemaType<typeof commentSchema>
 export default mongoose.model("Comment", commentSchema);
