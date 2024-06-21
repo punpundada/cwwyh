@@ -10,6 +10,14 @@ import { useAuthStore } from "@/store/auth-store";
 import { useToast } from "./ui/use-toast";
 import { Form } from "./ui/form";
 import Link from "next/link";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
 
 const LoginForm = () => {
   const login = useAuthStore((s) => s.login);
@@ -36,6 +44,58 @@ const LoginForm = () => {
   };
 
   return (
+    <>
+      <Card className="shadow-2xl">
+        <CardHeader>
+          <CardTitle>Login</CardTitle>
+          <CardDescription>Card Description</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={handleSubmit(onSubmit)} className="w-full">
+              <Container className="gap-8 justify-start flex-col">
+                <InputController
+                  control={control}
+                  name="email"
+                  placeholder="Email"
+                  type="email"
+                  className="h-16 text-xl md:h-10 md:text-base w-full"
+                />
+                <InputController
+                  control={control}
+                  name="password"
+                  placeholder="password"
+                  type="password"
+                  className="h-16 text-xl md:h-10 md:text-base"
+                />
+                <Button
+                  type="submit"
+                  variant={"default"}
+                  className=" w-full h-12 text-xl md:h-10 md:text-base"
+                  disabled={isLoading}
+                >
+                  Login
+                </Button>
+              </Container>
+            </form>
+          </Form>
+        </CardContent>
+        <CardFooter>
+          <span className="text-lg pt-4">
+            Do not have an account?{" "}
+            <strong>
+              <Link href={"/signup"}>click here</Link>
+            </strong>
+          </span>
+        </CardFooter>
+      </Card>
+    </>
+  );
+};
+
+export default LoginForm;
+
+/*
     <Container className="w-full h-full flex-col">
     <Form {...form}>
       <form onSubmit={handleSubmit(onSubmit)} className="w-full">
@@ -69,7 +129,4 @@ const LoginForm = () => {
       <Link href={'/signup'}>click here</Link>
       </strong></p>
     </Container>
-  );
-};
-
-export default LoginForm;
+*/

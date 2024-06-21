@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 const useMediaQueryProps = {
   sm: "(min-width: 640px)",
@@ -9,22 +9,17 @@ const useMediaQueryProps = {
 
 export function useMediaQuery(key: keyof typeof useMediaQueryProps) {
   const [isMatch, setIsMatch] = useState(false);
-  const isSmallScreen = useCallback(
-    () => window.matchMedia(useMediaQueryProps[key]).matches,
-    [key]
-  );
+
   useEffect(() => {
-    const updateScreenSize = () => {
-      setIsMatch(isSmallScreen());
-    };
-    window.addEventListener("resize", updateScreenSize);
-
-    updateScreenSize();
-
+    const matchQueryList = window.matchMedia(useMediaQueryProps[key]);
+    function handleChange(e: MediaQueryListEvent) {
+      setIsMatch(e.matches);
+    }
+    matchQueryList.addEventListener("change", handleChange);
     return () => {
-      window.removeEventListener("resize", updateScreenSize);
+      matchQueryList.removeEventListener("change", handleChange);
     };
-  }, [isSmallScreen, key]);
+  }, [key]);
 
   return isMatch;
 }

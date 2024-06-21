@@ -1,5 +1,5 @@
-import { Constants } from "../Constants.js";
-import DifficultyLevelModel from "../models/DifficultyLevel.js";
+import { Constants } from "../Constants";
+import DifficultyLevelModel from "../models/DifficultyLevel";
 
 const DifficultyLevel = DifficultyLevelModel;
 
@@ -13,13 +13,11 @@ const addLevel = async (req, res) => {
       },
     });
   }
-  console.log(level);
 
   try {
     const availableLevel = await DifficultyLevelModel.find({
       level: level.toUpperCase(),
     });
-    console.log(availableLevel);
     if (availableLevel.length !== 0) {
       return res.status(Constants.FORBIDDEN).json({
         isSuccess: false,

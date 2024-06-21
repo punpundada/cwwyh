@@ -1,17 +1,18 @@
 import express, { json } from 'express';
-import dotenv from 'dotenv';
 import cors from 'cors';
-import userRouter from './routes/UserRoute.js';
-import dbConnection from './config/dbConnection.js';
-import { Constants } from './Constants.js';
-import IngredientRouter from './routes/IngredientRoute.js';
-import RecipieRouter from './routes/RecipeRoute.js';
-import cuisineRouter from './routes/CuisineRoute.js';
-import DifficuiltyLevelRoute from './routes/DifficultyLevelRoute.js';
+import userRouter from './routes/UserRoute';
+import dbConnection from './config/dbConnection';
+import { Constants } from './Constants';
+import IngredientRouter from './routes/IngredientRoute';
+import RecipieRouter from './routes/RecipeRoute';
+import cuisineRouter from './routes/CuisineRoute';
+import DifficuiltyLevelRoute from './routes/DifficultyLevelRoute';
+import  env  from './lib/env';
+import { commentRoute } from './routes/CommentRoute';
+import { likeRoute } from './routes/LikeRoute';
 
-dotenv.config();
 const app = express();
-const port = process.env.PORT || 9002;
+const port = env.PORT || 9002;
 app.use(cors());
 app.use(json())
 
@@ -22,9 +23,11 @@ app.use('/api/ingredient', IngredientRouter);
 app.use('/api/recipe',RecipieRouter);
 app.use('/api/cuisine', cuisineRouter);
 app.use('/api/level', DifficuiltyLevelRoute);
+app.use('/api/comments', commentRoute);
+app.use('/api/likes', likeRoute);
 
-app.use((req,res)=>{
-    res.status(Constants.NOT_FOUND).json({ message: 'URI Not Found' });
+app.use("*",(req,res)=>{
+    res.status(Constants.NOT_FOUND).json({ message: 'URL you are looking for does not exist' });
 })
 
 app.listen(port , ()=>{

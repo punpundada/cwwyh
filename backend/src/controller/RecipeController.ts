@@ -1,47 +1,35 @@
-import { Constants } from "../Constants.js";
-import RecipeModel from "../models/RecipeModel.js";
-import User from "../models/UserModel.js";
-import  {IngredientModel}  from "../models/IngredientModel.js";
-import DifficultyLevelModel from '../models/DifficultyLevel.js';
-import { getModifiedRecipe } from '../lib/recipe.js';
+import { Constants } from "../Constants";
+import RecipeModel, {
+  RecipeType,
+} from "../models/RecipeModel";
+import User from "../models/UserModel";
+import { IngredientModel } from "../models/IngredientModel";
+import DifficultyLevelModel from "../models/DifficultyLevel";
+import { getModifiedRecipe } from "../lib/recipe";
+import { Request, Response } from "express";
+import { ReqUser } from "../types/user";
+import { error } from "console";
+import { ZodError } from "zod";
+import { zodRecipeSchema } from "../types/recipe";
 
-
-const addRecipe = async (req, res) => {
+const addRecipe = async (
+  req: Request<any, any, ReqUser<RecipeType>>,
+  res: Response
+) => {
   try {
+
     const {
       recipeName,
+      userId,
       ingredientsList,
-      prepTime,
+      description,
       difficultyLevel,
       imgUrls,
-      description,
+      prepTime,
       steps,
-    } = req.body;
-    const user = req.user;
-    const userId = user.id;
-    if (
-      (!recipeName ||
-        !ingredientsList ||
-        !prepTime ||
-        !difficultyLevel ||
-        !imgUrls ||
-        !Array.isArray(imgUrls) ||
-        imgUrls.length === 0 ||
-        steps,
-      !Array.isArray(steps))
-    ) {
-      return res.status(Constants.VALIDATION_ERROR).json({
-        isSuccess: false,
-        data: { message: "Missing Fields" },
-      });
-    }
+      userName,
+    } = zodRecipeSchema.parse(req.body.reqBody);
 
-    if (!Array.isArray(ingredientsList)) {
-      return res.status(Constants.VALIDATION_ERROR).json({
-        isSuccess: false,
-        data: { message: `ingredientsList should be a array type` },
-      });
-    }
     const foundRecipe = await RecipeModel.findOne({
       recipeName: recipeName,
       userId,
@@ -70,7 +58,7 @@ const addRecipe = async (req, res) => {
     if (newRecipe) {
       return res.status(Constants.CREATED).json({
         isSuccess: true,
-        data: { message: `New Recipe with id:${newRecipe._id} is created ` },
+        data: { message: `New Recipe with id:${newRecipe?._id} is created ` },
       });
     } else {
       return res.status(Constants.SERVER_ERROR).json({
@@ -79,9 +67,10 @@ const addRecipe = async (req, res) => {
       });
     }
   } catch (error) {
+    const errorMessages = JSON.parse(error.message).map(error => error.message);
     return res
       .status(Constants.SERVER_ERROR)
-      .json({ isSuccess: false, data: { message: error.message } });
+      .json({ isSuccess: false, data: { message:errorMessages , issues:error.issues} });
   }
 };
 
@@ -98,7 +87,7 @@ const deleteRecipe = async (req, res) => {
     if (deletadRecipe) {
       return res.status(Constants.OK).json({
         isSuccess: true,
-        data: { message: `Recipe with ${deletadRecipe._id} id Deletad` },
+        data: { message: `Recipe with ${deletadRecipe?._id} id Deletad` },
       });
     } else {
       return res
@@ -215,7 +204,7 @@ const deleteOneImage = async (req, res) => {
       });
     }
 
-    let imageIndex =1
+    let imageIndex = 1;
     // const imageIndex = foundRecipe.imgUrls.findIndex((img) => {
     //   return img._id.toString() === imageId;
     // });
@@ -247,16 +236,61 @@ const getAllRecipes = async (req, res) => {
   const perPageItems = 9;
   try {
     let query = {} as any;
-    const pageNumber = req.query.page || 0;
+    const pageNumber = Math.abs(req.query.page) || 0;
     const searchRecipe = req.query.search;
     if (searchRecipe) {
       const searchRecipeRegex = new RegExp(searchRecipe, "i");
       query.recipeName = { $regex: searchRecipeRegex };
     }
-
     const foundRecipes = await RecipeModel.find(query)
       .skip(perPageItems * pageNumber)
       .limit(perPageItems)
+      ?.populate({
+        path: "userId",
+        model: User,
+        select: ["firstName", "lastName"],
+      })
+      ?.populate({
+        path: "ingredientsList.ingredientId",
+        model: IngredientModel,
+        select: ["ingredientName"],
+      })
+      ?.populate({
+        path: "difficultyLevel",
+        model: DifficultyLevelModel,
+        select: ["level"],
+      })
+      ?.lean()
+      ?.exec();
+
+    const modifiedRecipes = foundRecipes?.map((recipe) => {
+      return getModifiedRecipe(recipe);
+    });
+
+    if (modifiedRecipes) {
+      return res.status(Constants.OK).json({
+        isSuccess: true,
+        data: { recipes: modifiedRecipes, message: `Recipe Found` },
+      });
+    } else {
+      return res.status(Constants.FORBIDDEN).json({
+        isSuccess: false,
+        data: { message: `Recipe Not Found` },
+      });
+    }
+  } catch (error) {
+    console.error(error)
+    return res.status(Constants.SERVER_ERROR).json({
+      isSuccess: false,
+      data: { message: error.message },
+    });
+  }
+};
+
+const getOneRecipe = async (req, res) => {
+  const recipeId = req.params.id;
+  try {
+    const foundRecipe = await RecipeModel.findById(recipeId)
       .populate({
         path: "userId",
         model: User,
@@ -274,51 +308,6 @@ const getAllRecipes = async (req, res) => {
       })
       .lean()
       .exec();
-
-    const modifiedRecipes = foundRecipes?.map((recipe) => {
-      return getModifiedRecipe(recipe)
-    });
-
-    if (modifiedRecipes) {
-      return res.status(Constants.OK).json({
-        isSuccess: true,
-        data: { recipes: modifiedRecipes, message: `Recipe Found` },
-      });
-    } else {
-      return res.status(Constants.FORBIDDEN).json({
-        isSuccess: false,
-        data: { message: `Recipe Not Found` },
-      });
-    }
-  } catch (error) {
-    return res.status(Constants.SERVER_ERROR).json({
-      isSuccess: false,
-      data: { message: error.message },
-    });
-  }
-};
-
-const getOneRecipe = async (req, res) => {
-  const recipeId = req.params.id;
-  try {
-    const foundRecipe = await RecipeModel.findById(recipeId)
-    .populate({
-      path: "userId",
-      model: User,
-      select: ["firstName", "lastName"],
-    })
-    .populate({
-      path: "ingredientsList.ingredientId",
-      model: IngredientModel,
-      select: ["ingredientName"],
-    })
-    .populate({
-      path: "difficultyLevel",
-      model: DifficultyLevelModel,
-      select: ["level"],
-    })
-    .lean()
-    .exec();
 
     const modifiedRecipe = getModifiedRecipe(foundRecipe);
 

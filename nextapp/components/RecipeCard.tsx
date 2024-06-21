@@ -24,7 +24,7 @@ const RecipeCard = ({ _id, description, recipeName, imgUrls }: IRecipe) => {
   return (
     <Card
       className={cn(
-        "w-auto h-80 flex flex-col hover:scale-[103%] transition-all"
+        "w-auto h-80 flex flex-col hover:scale-[103%] transition-all shadow-xl cursor-pointer"
       )}
       onClick={handleCardClick}
     >

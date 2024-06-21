@@ -52,7 +52,7 @@ const SignupForm = ({ className }: IsignupForm) => {
     }
   };
   return (
-    <Card className={cn("w-full", className)}>
+    <Card className={cn("w-full shadow-2xl", className)}>
       <CardHeader>
         <CardTitle>Sign Up</CardTitle>
         <CardDescription>
