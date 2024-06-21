@@ -26,8 +26,8 @@ app.use('/api/level', DifficuiltyLevelRoute);
 app.use('/api/comments', commentRoute);
 app.use('/api/likes', likeRoute);
 
-app.use((req,res)=>{
-    res.status(Constants.NOT_FOUND).json({ message: 'URI Not Found' });
+app.use("*",(req,res)=>{
+    res.status(Constants.NOT_FOUND).json({ message: 'URL you are looking for does not exist' });
 })
 
 app.listen(port , ()=>{
