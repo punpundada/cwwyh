@@ -23,10 +23,10 @@ export default function RootLayout({
   getAllRecipeService(0,undefined)
   return (
     <html lang="en">
-      <body className={cn(inter.className,"w-screen h-screen")}>
+      <body className={cn(inter.className,"w-screen min-h-screen")}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="light"
+          defaultTheme="ligh"
           enableSystem
           disableTransitionOnChange
         >
