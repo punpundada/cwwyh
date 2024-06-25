@@ -6,7 +6,7 @@ import Image from "next/image";
 
 const LoginPage = () => {
   return (
-    <Container className="w-full h-full">
+    <Container className="w-full h-screen">
       <Container className="w-1/2 h-full hidden md:flex">
           <Image src={loginImg} width={500} height={500} alt="login image" />
       </Container>

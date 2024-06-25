@@ -10,7 +10,7 @@ import Link from "next/link";
 const SideSheet = () => {
   return (
     <Sheet>
-      <SheetTrigger asChild className="w-8 h-8">
+      <SheetTrigger asChild className="w-8 h-8 cursor-pointer">
         <AlignJustify />
       </SheetTrigger>
       <SheetContent side={'left'} className="w-[250px]">

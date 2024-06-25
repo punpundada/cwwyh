@@ -32,7 +32,7 @@ const LoginButton = () => {
         <Container className="text-6xl">
           <AlertDialogBox
             triggerElement={
-              <Button className="text-lg hover:translate-y-1 transition-all bg-secondary-foreground hover:bg-secondary-foreground">
+              <Button className="text-lg hover:translate-y-1 transition-all">
                 Logout
               </Button>
             }
@@ -46,7 +46,7 @@ const LoginButton = () => {
           />
         </Container>
       ) : (
-        <Button className="text-lg hover:translate-y-1 transition-all bg-secondary-foreground hover:bg-secondary-foreground">
+        <Button className="text-lg hover:translate-y-1 transition-all">
           <Link href={"/login"}>Login</Link>
         </Button>
       )}
