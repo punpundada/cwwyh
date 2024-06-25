@@ -2,11 +2,12 @@
 import { useRecipeStore } from "@/store/recipe-store";
 import { useLayoutEffect } from "react";
 import BreadCrumbs from "@/components/BreadCrumbs";
-import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardContent,CardFooter } from "@/components/ui/card";
 import Image from "next/image";
 import Container from "@/components/Container";
 import { Separator } from "@/components/ui/separator";
-import { Cookie, AlarmClock, CookingPot, Flame } from "lucide-react";
+import { Cookie, AlarmClock, CookingPot, Flame, Circle } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 const RecipePage = ({ params }: { params: { id: string } }) => {
   const getRecipeById = useRecipeStore((s) => s.getRecipeById);
   const recipe = useRecipeStore((s) => s.recipe);
@@ -25,8 +26,8 @@ const RecipePage = ({ params }: { params: { id: string } }) => {
   return (
     <>
       <BreadCrumbs names={["Recipe", "id"]} />
-      <div className="h-screen w-full flex justify-center">
-        <Card className="w-[95%] md:w-[700px]">
+      <div className=" w-full flex justify-center">
+        <Card className="w-[95%] md:w-4/6">
           <CardHeader className="relative h-[350px] md:h-[400px]">
             <Image
               src={recipe?.imgUrls[0].imgUrl}
@@ -74,8 +75,37 @@ const RecipePage = ({ params }: { params: { id: string } }) => {
                 </Container>
               </Container>
 
+              <ScrollArea className="h-36">{recipe.description}</ScrollArea>
+
+              <div className="bg-accent w-full p-4">
+                <strong className="text-lg">INGREDIENTS</strong>
+                <Container className="flex-col gap-3 pt-5 items-start">
+                  {recipe.ingredientsList.map((ingredient) => (
+                    <Container key={ingredient._id} className="justify-start gap-4">
+                      <Circle />
+                      <span>{ingredient.quantity}</span>
+                    </Container>
+                  ))}
+                </Container>
+              </div>
+
+              <div className="bg-accent w-full p-4">
+              <strong className="text-lg">DIRECTIONS</strong>
+                <Container className="flex-col gap-3 pt-5 items-start">
+                  {recipe.steps.map((step,index) => (
+                    <Container key={step.step} className="justify-start gap-4">
+                      <span>{index+1}</span>
+                      <span>{step.step}</span>
+                    </Container>
+                  ))}
+                </Container>
+              </div>
             </Container>
+
           </CardContent>
+          <CardFooter>
+            <p>NOTES</p>
+          </CardFooter>
         </Card>
       </div>
     </>
@@ -83,20 +113,3 @@ const RecipePage = ({ params }: { params: { id: string } }) => {
 };
 
 export default RecipePage;
-
-/*
-      <Container className="relative h-2/5 w-full md:w-3/5">
-        <Image
-          src={recipe?.imgUrls[0].imgUrl}
-          alt={recipe.recipeName ?? ""}
-          fill
-          className="object-cover rounded-t-xl"
-        />
-      </Container>
-      <Container className="p-4 flex-col h-auto justify-start items-start md:w-3/5 border gap-4">
-        <p className="text-3xl font-bold">{recipe?.recipeName}</p>
-        <span className="italic py-3">Recipe by {recipe?.user.userName}</span>
-        <Separator />
-        <Container className="h-auto justify-between items-start text-sm md:px-36"></Container>
-      </Container>
-*/
