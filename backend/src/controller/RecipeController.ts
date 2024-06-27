@@ -1,10 +1,7 @@
 import { Constants } from "../Constants";
-import RecipeModel, {
-  RecipeType,
-} from "../models/RecipeModel";
+import RecipeModel, { RecipeType } from "../models/RecipeModel";
 import User from "../models/UserModel";
 import { IngredientModel } from "../models/IngredientModel";
-import DifficultyLevelModel from "../models/DifficultyLevel";
 import { getModifiedRecipe } from "../lib/recipe";
 import { Request, Response } from "express";
 import { ReqUser } from "../types/user";
@@ -12,48 +9,26 @@ import { error } from "console";
 import { ZodError } from "zod";
 import { zodRecipeSchema } from "../types/recipe";
 
-const addRecipe = async (
-  req: Request<any, any, ReqUser<RecipeType>>,
-  res: Response
-) => {
+const addRecipe = async (req: Request<any, any, RecipeType>, res: Response) => {
   try {
-
-    const {
-      recipeName,
-      userId,
-      ingredientsList,
-      description,
-      difficultyLevel,
-      imgUrls,
-      prepTime,
-      steps,
-      userName,
-    } = zodRecipeSchema.parse(req.body.reqBody);
+    req.body.userId = res.locals.user.id;
+    const validRecipe = zodRecipeSchema.parse(req.body);
 
     const foundRecipe = await RecipeModel.findOne({
-      recipeName: recipeName,
-      userId,
+      recipeName: validRecipe.recipeName,
+      userId: validRecipe.userId,
     });
 
     if (foundRecipe) {
       return res.status(Constants.FORBIDDEN).json({
         isSuccess: false,
         data: {
-          message: `User with id: ${userId} has already Recipe with name: ${recipeName}`,
+          message: `User with id: ${validRecipe.userId} has already Recipe with name: ${validRecipe.recipeName}`,
         },
       });
     }
 
-    const newRecipe = await RecipeModel.create({
-      recipeName: recipeName,
-      userId,
-      ingredientsList,
-      description,
-      prepTime,
-      difficultyLevel,
-      imgUrls,
-      steps,
-    });
+    const newRecipe = await RecipeModel.create(validRecipe);
 
     if (newRecipe) {
       return res.status(Constants.CREATED).json({
@@ -67,10 +42,9 @@ const addRecipe = async (
       });
     }
   } catch (error) {
-    const errorMessages = JSON.parse(error.message).map(error => error.message);
     return res
       .status(Constants.SERVER_ERROR)
-      .json({ isSuccess: false, data: { message:errorMessages , issues:error.issues} });
+      .json({ isSuccess: false, data: { message: error.message, issues: error.issues } });
   }
 };
 
@@ -82,7 +56,6 @@ const deleteRecipe = async (req, res) => {
         .status(Constants.VALIDATION_ERROR)
         .json({ isSuccess: false, data: { message: "Recipe id is required" } });
     }
-
     const deletadRecipe = await RecipeModel.findByIdAndDelete({ _id: id });
     if (deletadRecipe) {
       return res.status(Constants.OK).json({
@@ -134,12 +107,7 @@ const getRecipesByIngredients = async (req, res) => {
 //call this method only when  a recipe is already pressent and you want to add images
 const addRecipeImageUrl = async (req, res) => {
   const { newImgUrls, recipeId } = req.body;
-  if (
-    !newImgUrls ||
-    !recipeId ||
-    !Array.isArray(newImgUrls) ||
-    newImgUrls.length === 0
-  ) {
+  if (!newImgUrls || !recipeId || !Array.isArray(newImgUrls) || newImgUrls.length === 0) {
     return res.status(Constants.VALIDATION_ERROR).json({
       isSuccess: false,
       data: { message: "Image URLs and Recipe Id is a Required Field" },
@@ -255,11 +223,6 @@ const getAllRecipes = async (req, res) => {
         model: IngredientModel,
         select: ["ingredientName"],
       })
-      ?.populate({
-        path: "difficultyLevel",
-        model: DifficultyLevelModel,
-        select: ["level"],
-      })
       ?.lean()
       ?.exec();
 
@@ -279,7 +242,7 @@ const getAllRecipes = async (req, res) => {
       });
     }
   } catch (error) {
-    console.error(error)
+    console.error(error);
     return res.status(Constants.SERVER_ERROR).json({
       isSuccess: false,
       data: { message: error.message },
@@ -300,11 +263,6 @@ const getOneRecipe = async (req, res) => {
         path: "ingredientsList.ingredientId",
         model: IngredientModel,
         select: ["ingredientName"],
-      })
-      .populate({
-        path: "difficultyLevel",
-        model: DifficultyLevelModel,
-        select: ["level"],
       })
       .lean()
       .exec();

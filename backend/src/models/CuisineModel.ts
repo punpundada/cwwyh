@@ -10,4 +10,5 @@ const CuisineSchema =new mongoose.Schema({
     timestamps:true,
 });
 const Cuisine= mongoose.model('Cuisine' , CuisineSchema);
+export type CuisineType = mongoose.InferSchemaType<typeof CuisineSchema>
 export default Cuisine;

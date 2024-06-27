@@ -1,9 +1,10 @@
-import CuisineModel from "../models/CuisineModel";
+import CuisineModel, { CuisineType } from "../models/CuisineModel";
 import { Constants } from "../Constants";
+import { Request } from "express";
 
-const addCuisine = async (req, res) => {
+const addCuisine = async (req:Request<unknown,unknown,CuisineType>, res) => {
   const { cuisineName } = req.body;
-  if (!cuisineName) {
+  if (!cuisineName || typeof cuisineName !== 'string') {
     return res
       .status(Constants.VALIDATION_ERROR)
       .json({ isSuccess: false, data: { message: "Missing Fields" } });

@@ -6,6 +6,6 @@ const cuisineRouter = Router();
 cuisineRouter.post("/add", addCuisine);
 cuisineRouter.get("/getAll",ValidateToken, getAllCuisine);
 cuisineRouter.post("/update", ValidateToken,updateCuisine);
-cuisineRouter.delete('/delete/:cousineId',ValidateToken,  deleteCuisine);
+cuisineRouter.delete('/delete/:id',ValidateToken,  deleteCuisine);
 
 export default cuisineRouter;

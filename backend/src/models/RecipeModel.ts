@@ -13,10 +13,6 @@ const RecipeSchema = new Schema(
       ref: "User",
       required: [true, "UserId is a Required Field"],
     },
-    userName: {
-      type: String,
-      required: false,
-    },
     ingredientsList: [
       {
         ingredientId: {
@@ -37,8 +33,8 @@ const RecipeSchema = new Schema(
       required: [true, "Prepration Time is a Required Field"],
     },
     difficultyLevel: {
-      type: Schema.Types.ObjectId,
-      ref: "DifficultyLevel",
+      type: String,
+      enum:["EASY","INTERMEDIATE","ADVANCE","EXPERT"],
       required: [true, "Difficulty Level is a Required Field"],
     },
     imgUrls: [

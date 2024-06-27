@@ -4,7 +4,7 @@ import ValidateToken from '../middleware/ValidationTokenHandler';
 
 const RecipieRouter = Router();
 
-RecipieRouter.post('/add',ValidateToken, addRecipe)
+RecipieRouter.post('/add',ValidateToken,addRecipe)
 RecipieRouter.delete('/delete/:id',ValidateToken,  deleteRecipe);
 RecipieRouter.post('/getByIngredients',getRecipesByIngredients);
 RecipieRouter.post('/image/add', ValidateToken,addRecipeImageUrl)

@@ -3,7 +3,6 @@ import z from "zod";
 export const zodRecipeSchema = z.object({
   recipeName: z.string({ required_error: "Recipe name is a required field" }),
   userId: z.string({ required_error: "User id is a required field" }),
-  userName: z.string({ required_error: "User name is a required field" }),
   ingredientsList: z
     .array(
       z.object({
@@ -20,9 +19,7 @@ export const zodRecipeSchema = z.object({
     .refine((val) => z.date().parse(new Date(val)), {
       message: "Invalid date format",
     }),
-  difficultyLevel: z.string({
-    required_error: "Difficulty level is a required field",
-  }),
+  difficultyLevel: z.enum(["EASY","INTERMEDIATE","ADVANCE","EXPERT"],{required_error:"difficultyLevel is a required field"}),
   imgUrls: z
     .array(
       z.object({
@@ -37,7 +34,7 @@ export const zodRecipeSchema = z.object({
       })
     )
     .min(1, { message: "at least 1 step is required" }),
-  cuisine: z.string({ required_error: "Cuisine is a required field" }),
+  cuisine: z.string({ required_error: "CuisineId is a required field" }),
   course: z.enum(["DINNER", "LUNCH", "BREAKFAST"], {
     required_error: "Course is a required field",
   }),
