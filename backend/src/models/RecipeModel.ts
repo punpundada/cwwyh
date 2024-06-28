@@ -66,6 +66,19 @@ const RecipeSchema = new Schema(
       enum: ["DINNER", "LUNCH", "BREAKFAST"],
       require: [true, "Course is a required field"],
     },
+    servings:{
+      type:Schema.Types.Number,
+      required:[true,"Number of serving is a required field"]
+    },
+    cookingTime:{
+      type: Date,
+      required: [true, "Cooking Time is a Required Field"],
+    },
+    calories:{
+      type:String,
+      required:[true,"calories is a required field"]
+    }
+
   },
   {
     timestamps: true,

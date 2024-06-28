@@ -41,4 +41,11 @@ export const zodRecipeSchema = z.object({
   course: z.enum(["DINNER", "LUNCH", "BREAKFAST"], {
     required_error: "Course is a required field",
   }),
+  servings:z.number({required_error:"Servings is a required field"}),
+  cookingTime:z
+  .string({ required_error: "Cooking time is a required field" })
+  .refine((val) => z.date().parse(new Date(val)), {
+    message: "Invalid date format",
+  }),
+  calories:z.string({required_error:"calories is a required field"})
 });
