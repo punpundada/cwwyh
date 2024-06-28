@@ -43,8 +43,8 @@ const RecipePage = ({ params }: { params: { id: string } }) => {
               <Separator />
 
               <Container className="h-auto justify-evenly text-xs md:text-base">
-                <span>Course: {"Breakfast"}</span>/<span>Course: {"Breakfast"}</span>/
-                <span>Course: {"Breakfast"}</span>
+                <span>Course: {"Breakfast"}</span>/<span>Cuisine: {"American"}</span>/
+                <span>Difficulty: {"Easy"}</span>
               </Container>
 
               <Container className="h-full border flex-col md:flex-row">
