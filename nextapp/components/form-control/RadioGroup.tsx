@@ -10,32 +10,47 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
 import React from "react";
-import { Control, FieldValues, Path } from "react-hook-form";
+import {
+  Control,
+  FieldValues,
+  Path,
+  PathValue,
+  useFormContext,
+} from "react-hook-form";
 
 interface RadioGroupController<T extends FieldValues> {
-  control: Control<T>;
   name: Path<T>;
   label?: string;
   options: { value: string; label: string }[];
   row?: boolean;
+  defaultValue?: PathValue<T, Path<T>>;
 }
 
 const RadioGroupController = <T extends FieldValues>({
-  control,
   name,
   label,
   options,
   row,
+  defaultValue,
 }: RadioGroupController<T>) => {
+  const { control } = useFormContext();
   return (
     <FormField
       control={control}
       name={name}
+      defaultValue={defaultValue}
       render={({ field }) => (
         <>
-          <FormItem className="space-y-3">
+          <FormItem
+            className={cn("space-y-3", {
+              flex: row,
+              "gap-1": row,
+              "items-center": row,
+              "justify-center": row,
+            })}
+          >
             {label && <FormLabel>{label}</FormLabel>}
-            <FormControl>
+            <FormControl defaultValue={defaultValue}>
               <RadioGroup
                 onValueChange={field.onChange}
                 defaultValue={field.value}
@@ -51,7 +66,9 @@ const RadioGroupController = <T extends FieldValues>({
                     <FormControl>
                       <RadioGroupItem value={option.value} />
                     </FormControl>
-                    <FormLabel className="font-normal">{option.label}</FormLabel>
+                    <FormLabel className="font-normal hover:cursor-pointer hover:underline">
+                      {option.label}
+                    </FormLabel>
                   </FormItem>
                 ))}
               </RadioGroup>

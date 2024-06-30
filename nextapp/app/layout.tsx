@@ -26,7 +26,7 @@ export default function RootLayout({
       <body className={cn(inter.className,"w-screen min-h-screen")}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="ligh"
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
