@@ -25,8 +25,8 @@ const radioOptions = [
 
 const courseOptions = [
   { value: "BREAKFAST", label: "BREAKFAST" },
-  { value: "DINNERT", label: "DINNERT" },
-  { value: "LUNCH", label: "DINNERT" },
+  { value: "DINNER", label: "DINNER" },
+  { value: "LUNCH", label: "LUNCH" },
 ];
 
 const options = [
@@ -76,7 +76,7 @@ const AddRecipePage = () => {
       <BreadCrumbs names={["Recipe", "Add"]} />
       <Form {...form}>
         <Container
-          className="flex-col w-[95%] md:w-[70%] gap-4"
+          className="flex-col w-[95%] md:w-[70%] gap-4 bg-background"
           component="form"
         >
           <Card className="w-full p-3">
@@ -139,10 +139,10 @@ const AddRecipePage = () => {
               <div className="w-full md:w-1/2">
                 <InputController
                   control={form.control}
-                  name="servings"
-                  placeholder="Servings"
+                  name="calories"
+                  placeholder="Calories"
                   className="w-full"
-                  label="Servings"
+                  label="Calories in kcal"
                 />
                 <InputController
                   control={form.control}
