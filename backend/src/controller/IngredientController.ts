@@ -88,50 +88,6 @@ const addAllIngredients = async (req, res) => {
   } catch (error) {}
 };
 
-// const addOneHelper = async (ingredientName) => {
-//   try {
-//     // if (!ingredientName) {
-//     //     return res.status(Constants.NOT_FOUND).json({
-//     //       isSuccess: false,
-//     //       data: { message: "Ingredient name not provided" },
-//     //     });
-//     //   };
-
-//     //if already exists
-//     const availableIngredient = await IngredientModel.findOne({
-//       ingredientName: ingredientName.toUpperCase(),
-//     });
-
-//     if (availableIngredient) {
-//       return;
-//       // res.status(Constants.FORBIDDEN).json({
-//       //   isSuccess: false,
-//       //   data: {
-//       //     message: `Ingredient with ${availableIngredient.ingredientName} name is already Exisits`,
-//       //   },
-//       // });
-//     }
-
-//     //creating new entry in db
-//     const ingredient = IngredientModel.create({
-//       ingredientName: ingredientName.toUpperCase(),
-//     });
-
-//     if (ingredient !== undefined && ingredient !== null) {
-//       return;
-//       // res.status(Constants.VALIDATION_ERROR).json({
-//       //   isSuccess: true,
-//       //   data: { id: ingredient._id, message: "New Ingredient is created" },
-//       // });
-//     } else {
-//       return res.status(Constants.VALIDATION_ERROR).json({
-//         isSuccess: false,
-//         data: { message: "New Ingredient is not created" },
-//       });
-//     }
-//   } catch (error) {}
-// };
-
 const deleteIngredient = async (req, res) => {
   try {
     const  id  = req.params.id;

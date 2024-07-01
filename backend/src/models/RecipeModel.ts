@@ -37,8 +37,8 @@ const RecipeSchema = new Schema(
       required: [true, "Prepration Time is a Required Field"],
     },
     difficultyLevel: {
-      type: Schema.Types.ObjectId,
-      ref: "DifficultyLevel",
+      type: String,
+      enum:["EASY","MEDIUM","ADVANCE"],
       required: [true, "Difficulty Level is a Required Field"],
     },
     imgUrls: [

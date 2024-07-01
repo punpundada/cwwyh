@@ -20,9 +20,7 @@ export const zodRecipeSchema = z.object({
     .refine((val) => z.date().parse(new Date(val)), {
       message: "Invalid date format",
     }),
-  difficultyLevel: z.string({
-    required_error: "Difficulty level is a required field",
-  }),
+  difficultyLevel: z.enum(["EASY","MEDIUM","ADVANCE"],{required_error:"difficultyLevel is required"}),
   imgUrls: z
     .array(
       z.object({
