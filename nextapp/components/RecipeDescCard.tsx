@@ -40,7 +40,7 @@ const RecipeDescCard = () => {
             </Container>
             <Container className="flex-col">
               <ChefHat size={40} strokeWidth={1.75} absoluteStrokeWidth />
-              <label htmlFor="clock">{recipe?.userId}</label>
+              <label htmlFor="clock">{recipe?.user.userId}</label>
             </Container>
           </Container>
           <Container className="flex-col h-56">
