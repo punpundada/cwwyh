@@ -255,11 +255,6 @@ const getAllRecipes = async (req, res) => {
         model: IngredientModel,
         select: ["ingredientName"],
       })
-      ?.populate({
-        path: "difficultyLevel",
-        model: DifficultyLevelModel,
-        select: ["level"],
-      })
       ?.lean()
       ?.exec();
 
