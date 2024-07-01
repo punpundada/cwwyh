@@ -80,7 +80,7 @@ const AddRecipePage = () => {
           className="flex-col w-[95%] md:w-[95%] gap-4 bg-background pb-4"
           component="form"
         >
-          <Card className="w-full">
+          <Card className="w-full shadow-md">
             <CardHeader>
               <CardTitle>Step 1</CardTitle>
               <CardDescription>Basic Details</CardDescription>
@@ -148,7 +148,7 @@ const AddRecipePage = () => {
               />
             </CardContent>
           </Card>
-          <Card className="w-full">
+          <Card className="w-full shadow-md">
             <CardHeader>
               <CardTitle>Step 2</CardTitle>
               <CardDescription>Ingredient Details</CardDescription>
@@ -164,7 +164,7 @@ const AddRecipePage = () => {
               <div className="col-span-1 md:col-span-2 lg:col-span-3">
                 {
                   ingredientsList.map(ingredient=>(
-                    <div className="flex space-x-4">
+                    <div className="flex space-x-4" key={ingredient.ingredientId}>
                       <Shell /> <label htmlFor="">{ingredient.ingredientId}</label>
                     </div>
                   ))
@@ -172,7 +172,7 @@ const AddRecipePage = () => {
               </div>
             </CardContent>
           </Card>
-          <Card className="w-full">
+          <Card className="w-full shadow-md">
             <CardHeader>
               <CardTitle>Step 3</CardTitle>
               <CardDescription>Directions</CardDescription>
