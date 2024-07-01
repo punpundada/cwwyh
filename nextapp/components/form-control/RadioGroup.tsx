@@ -47,6 +47,7 @@ const RadioGroupController = <T extends FieldValues>({
               "gap-1": row,
               "items-center": row,
               "justify-center": row,
+              "space-x-3":row
             })}
           >
             {label && <FormLabel>{label}</FormLabel>}
