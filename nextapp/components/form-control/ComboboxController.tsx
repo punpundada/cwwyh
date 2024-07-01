@@ -82,7 +82,7 @@ const ComboboxController = <T extends FieldValues>({
                 variant="outline"
                 role="combobox"
                 aria-expanded={open}
-                className="w-full justify-between h-[35px]"
+                className="w-full justify-between h-[36px]"
               >
                 {field.value
                   ? options.find((options) =>
