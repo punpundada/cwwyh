@@ -6,6 +6,7 @@ import { InputController } from "@/components/form-control/InputController";
 import RadioGroupController from "@/components/form-control/RadioGroup";
 import {
   Card,
+  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
@@ -46,7 +47,7 @@ const options = [
     label: "option 3",
   },
 ];
-// 
+//
 const AddRecipePage = () => {
   const form = useForm<RecipeInsert>({
     resolver: zodResolver(RecipeSchema),
@@ -76,83 +77,76 @@ const AddRecipePage = () => {
       <BreadCrumbs names={["Recipe", "Add"]} />
       <Form {...form}>
         <Container
-          className="flex-col w-[95%] md:w-[70%] gap-4 bg-background"
+          className="flex-col w-[95%] md:w-[95%] gap-4 bg-background"
           component="form"
         >
-          <Card className="w-full p-3">
+          <Card className="w-full">
             <CardHeader>
-              <CardTitle>Recipe</CardTitle>
+              <CardTitle>Step 1</CardTitle>
               <CardDescription>Basic Details</CardDescription>
             </CardHeader>
-            <InputController
-              control={form.control}
-              name="recipeName"
-              placeholder="Recipe Name"
-              className="w-full"
-              label="Recipe Name"
-            />
-            <div className="flex-col md:flex-row flex w-full pt-2 space-x-4 pb-4">
-              <div className="pb-3 md:pb-0 w-full md:w-1/2">
-                <TextAreatController
-                  name="description"
-                  placeholder="Description"
-                  label="Description"
-                  className="w-full h-40"
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="col-span-1 md:col-span-2">
+                <InputController
+                  control={form.control}
+                  name="recipeName"
+                  placeholder="Recipe Name"
+                  className="w-full"
+                  label="Recipe Name"
                 />
               </div>
-              <div className="flex justify-evenly items-center w-full md:w-1/2">
-                <RadioGroupController
-                  name="difficultyLevel"
-                  options={radioOptions}
-                  label="Difficulty Level"
-                />
-                <RadioGroupController
-                  name="course"
-                  options={courseOptions}
-                  label="Course"
-                />
-              </div>
-            </div>
+              <InputController
+                control={form.control}
+                name="servings"
+                placeholder="Servings"
+                className="w-full"
+                label="Servings"
+              />
+              <InputController
+                control={form.control}
+                name="calories"
+                placeholder="Calories"
+                className="w-full"
+                label="Calories in kcal"
+              />
+              <ComboboxController
+                name="cuisine"
+                options={options}
+                placeholder="Cuisine"
+                label="Cuisine"
+              />
 
-            <div className="flex flex-col md:flex-row space-x-4">
-              <div className="w-full md:w-1/2">
-                <InputController
-                  control={form.control}
-                  name="servings"
-                  placeholder="Servings"
-                  className="w-full"
-                  label="Servings"
-                />
-                <ComboboxController
-                  name="cuisine"
-                  options={options}
-                  placeholder="Cuisine"
-                  label="Cuisine"
-                />
-                <ComboboxController
-                  name="cuisine"
-                  options={options}
-                  placeholder="Cuisine"
-                  label="Cuisine"
-                />
-              </div>
-              <div className="w-full md:w-1/2">
-                <InputController
-                  control={form.control}
-                  name="calories"
-                  placeholder="Calories"
-                  className="w-full"
-                  label="Calories in kcal"
-                />
-                <InputController
-                  control={form.control}
-                  name="servings"
-                  placeholder="Servings"
-                  className="w-full"
-                  label="Servings"
-                />
-              </div>
-            </div>
+              <InputController
+                control={form.control}
+                name="cookingTime"
+                placeholder="Cooking Time"
+                className="w-full"
+                label="Cooking Time"
+              />
+              <RadioGroupController
+                name="difficultyLevel"
+                options={radioOptions}
+                label="Difficulty Level"
+              />
+              <RadioGroupController
+                name="course"
+                options={courseOptions}
+                label="Course"
+              />
+              <TextAreatController
+                name="description"
+                placeholder="Description"
+                label="Description"
+                className="w-full h-32"
+              />
+              <InputController
+                control={form.control}
+                name="prepTime"
+                placeholder="Prep Time"
+                className="w-full"
+                label="Prep Time"
+              />
+            </CardContent>
           </Card>
           <Card className="w-full">2</Card>
           <Card className="w-full">3</Card>

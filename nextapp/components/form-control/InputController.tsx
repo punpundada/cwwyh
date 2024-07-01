@@ -19,7 +19,7 @@ interface InputControllerProps<T extends FieldValues>
   label?: string;
   disabled?: boolean;
   placeholder: string;
-  type?: "email" | "number" | "file" | "password" | 'text';
+  type?: "email" | "number" | "file" | "password" | 'text' | "file";
   formDescription?:React.ReactNode
 }
 
