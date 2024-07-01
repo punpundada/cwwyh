@@ -55,7 +55,7 @@ const RadioGroupController = <T extends FieldValues>({
               <RadioGroup
                 onValueChange={field.onChange}
                 defaultValue={field.value}
-                className={cn("flex flex-col space-y-1", {
+                className={cn("flex flex-col space-y-3", {
                   "flex-row": row,
                 })}
               >
