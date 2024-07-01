@@ -17,6 +17,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RecipeInsert, RecipeSchema } from "@/types/IRecipe";
 import TextAreatController from "@/components/form-control/TextAreatController";
+import { Shell } from "lucide-react";
 
 const radioOptions = [
   { value: "EASY", label: "EASY" },
@@ -49,6 +50,7 @@ const options = [
 ];
 //
 const AddRecipePage = () => {
+
   const form = useForm<RecipeInsert>({
     resolver: zodResolver(RecipeSchema),
     mode: "onChange",
@@ -68,16 +70,14 @@ const AddRecipePage = () => {
       steps: [],
     },
   });
-  const dd = form.watch("cuisine");
-  useEffect(() => {
-    console.log(dd);
-  }, [dd]);
+  const ingredientsList = form.watch("ingredientsList");
+
   return (
     <>
       <BreadCrumbs names={["Recipe", "Add"]} />
       <Form {...form}>
         <Container
-          className="flex-col w-[95%] md:w-[95%] gap-4 bg-background"
+          className="flex-col w-[95%] md:w-[95%] gap-4 bg-background pb-4"
           component="form"
         >
           <Card className="w-full">
@@ -148,8 +148,37 @@ const AddRecipePage = () => {
               />
             </CardContent>
           </Card>
-          <Card className="w-full">2</Card>
-          <Card className="w-full">3</Card>
+          <Card className="w-full">
+            <CardHeader>
+              <CardTitle>Step 2</CardTitle>
+              <CardDescription>Ingredient Details</CardDescription>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="col-span-1 md:col-span-2">
+                <ComboboxController
+                  name="ingredientId"
+                  options={options}
+                  placeholder="Ingredien"
+                />
+              </div>
+              <div className="col-span-1 md:col-span-2 lg:col-span-3">
+                {
+                  ingredientsList.map(ingredient=>(
+                    <div className="flex space-x-4">
+                      <Shell /> <label htmlFor="">{ingredient.ingredientId}</label>
+                    </div>
+                  ))
+                }
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="w-full">
+            <CardHeader>
+              <CardTitle>Step 3</CardTitle>
+              <CardDescription>Directions</CardDescription>
+            </CardHeader>
+            <CardContent>HELLO</CardContent>
+          </Card>
         </Container>
       </Form>
     </>

@@ -57,3 +57,13 @@ export const getRecipeById = cache(async(id:string)=>{
   }
 })
 
+export const getIngredientList = cache(async()=>{
+  try {
+    const list = await axiosInstance.get('',{
+      signal:newAbortSignal(5000)
+    })
+  } catch (error) {
+    
+  }
+})
+
