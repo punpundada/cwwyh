@@ -6,7 +6,6 @@ import { Constants } from './Constants';
 import IngredientRouter from './routes/IngredientRoute';
 import RecipieRouter from './routes/RecipeRoute';
 import cuisineRouter from './routes/CuisineRoute';
-import DifficuiltyLevelRoute from './routes/DifficultyLevelRoute';
 import  env  from './lib/env';
 import { commentRoute } from './routes/CommentRoute';
 import { likeRoute } from './routes/LikeRoute';
@@ -22,7 +21,6 @@ app.use('/api/user',userRouter)
 app.use('/api/ingredient', IngredientRouter);
 app.use('/api/recipe',RecipieRouter);
 app.use('/api/cuisine', cuisineRouter);
-app.use('/api/level', DifficuiltyLevelRoute);
 app.use('/api/comments', commentRoute);
 app.use('/api/likes', likeRoute);
 
