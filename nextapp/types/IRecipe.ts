@@ -30,16 +30,16 @@ interface ImgUrl {
 }
 
 const IngredientSchema = z.object({
-  ingredientId: z.string(),
-  quantity: z.string(),
+  ingredientId: z.string({required_error:"Ingredient is required"}),
+  quantity: z.string({required_error:"Quantity is required"}),
 });
 
 const ImgUrlSchema = z.object({
-  imgUrl: z.string().url(),
+  imgUrl: z.string({required_error:"Image is required"}).url({message:"Must be a URL"}),
 });
 
 const StepSchema = z.object({
-  step: z.string(),
+  step: z.string({required_error:"Direction is required"}),
 });
 
 export const RecipeSchema = z.object({

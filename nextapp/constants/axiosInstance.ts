@@ -1,4 +1,5 @@
 import axios from "axios";
+
 const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
 const axiosInstance = axios.create({
@@ -12,8 +13,11 @@ axiosInstance.interceptors.request.use(
     if (notProtectedRoutes.includes(config.url || "")) {
       return config;
     }
-    const resData:any = await fetch('http://localhost:3000/api/auth/token',{method:'get'});
-    const token = resData?.token;
+
+    let token = "";
+    if (window?.sessionStorage) {
+      token = window.sessionStorage.getItem("accessToken")!;
+    }
 
     config.headers.Authorization = "Bearer " + token;
     return config;
