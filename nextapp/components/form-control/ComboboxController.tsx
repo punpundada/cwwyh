@@ -32,10 +32,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-type Options = {
+export type Options = {
   value: string;
   label: string;
-  id: string;
+  id:string
 };
 
 const languages = [
@@ -86,7 +86,7 @@ const ComboboxController = <T extends FieldValues>({
               >
                 {field.value
                   ? options.find((options) =>
-                      options.value
+                      options.id
                         .toLowerCase()
                         .includes(field.value.toLowerCase())
                     )?.label
@@ -108,8 +108,8 @@ const ComboboxController = <T extends FieldValues>({
                   <CommandGroup>
                     {options.map((options) => (
                       <CommandItem
-                        key={options.value}
-                        value={options.value}
+                        key={options.id}
+                        value={options.id}
                         onSelect={(currentValue) => {
                           setValue(
                             name,

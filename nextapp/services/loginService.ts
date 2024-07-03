@@ -3,6 +3,7 @@ import axiosInstance from "@/constants/axiosInstance";
 import { ApiRes } from "@/types/ApiRes";
 import { ILoginReq } from "@/types/loginReq";
 import { cache } from "react";
+
 export interface login_res {
   accessToken: string;
   message: string;
@@ -17,6 +18,9 @@ export const loginService = cache(async (data: ILoginReq) => {
     if (res.data.isSuccess) {
       await storeToken({ token: res.data.data.accessToken });
       testCookies()
+    }
+    if(window?.sessionStorage){
+      window.sessionStorage.setItem("accessToken",res.data.data.accessToken)
     }
     return res.data;
   } catch (error) {
