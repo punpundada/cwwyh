@@ -51,36 +51,3 @@ export const InputController = <T extends FieldValues>({
     />
   );
 };
-
-/*
-    <Controller
-      name={name}
-      disabled={disabled}
-      control={control}
-      render={({ field, fieldState: { error } }) => {
-        return (
-          <Container className="flex-col gap-1 h-[5rem]">
-            <Container className="justify-start h-auto ms-3">
-              {label && <Label htmlFor={name}>{label}</Label>}
-            </Container>
-            <Input
-              {...field}
-              {...rest}
-              className={cn("bottom-1 border-foreground", className, {
-                "border-destructive": error,
-                "focus-visible:border-foreground": error,
-              })}
-              name={name}
-              placeholder={placeholder}
-              type={type}
-            />
-            {error && (
-              <p className="h-2 text-destructive">
-                {error?.message ? `${error?.message}` : ""}
-              </p>
-            )}
-          </Container>
-        );
-      }}
-    />
-*/
