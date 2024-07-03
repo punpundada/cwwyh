@@ -251,7 +251,7 @@ const AddRecipePage = () => {
                     <div className="col-span-1">
                       <div className="flex gap-4" key={ingredient.ingredientId}>
                         {index + 1}.
-                        <label htmlFor="">
+                        <label htmlFor="" className="">
                           {
                             ingredienList.find((x) => x.id === ingredient.ingredientId)
                               ?.label
@@ -259,7 +259,7 @@ const AddRecipePage = () => {
                         </label>
                       </div>
                     </div>
-                    <div className="col-span-2 flex items-center justify-center">
+                    <div className="col-span-3 md:col-span-2  flex items-center justify-center">
                       <InputController
                         control={form.control}
                         name={`ingredientsList.${index}.quantity`}
@@ -277,7 +277,9 @@ const AddRecipePage = () => {
               <CardTitle>Step 3</CardTitle>
               <CardDescription>Directions</CardDescription>
             </CardHeader>
-            <CardContent>HELLO</CardContent>
+            <CardContent>
+              Steps/Directions
+            </CardContent>
           </Card>
         </Container>
       </Form>
