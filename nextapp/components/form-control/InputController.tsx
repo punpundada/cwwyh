@@ -19,8 +19,8 @@ interface InputControllerProps<T extends FieldValues>
   label?: string;
   disabled?: boolean;
   placeholder: string;
-  type?: "email" | "number" | "file" | "password" | 'text' | "file";
-  formDescription?:React.ReactNode
+  type?: "email" | "number" | "file" | "password" | "text" | "file";
+  formDescription?: React.ReactNode;
 }
 
 export const InputController = <T extends FieldValues>({
@@ -32,22 +32,42 @@ export const InputController = <T extends FieldValues>({
   placeholder,
   type,
   formDescription,
+  onChange,
+  onBlur,
   ...rest
 }: InputControllerProps<T>) => {
   return (
     <FormField
       control={control}
       name={name}
-      render={({ field }) => (
-        <FormItem className="w-full">
-          {label && <FormLabel>{label}</FormLabel>}
-          <FormControl className="w-full">
-            <Input placeholder={placeholder} {...field} {...rest} type={type} className={cn('w-full',className)}/>
-          </FormControl>
-          {formDescription && <FormDescription>{formDescription}</FormDescription>}
-          <FormMessage />
-        </FormItem>
-      )}
+      render={({ field }) => {
+        const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+          field.onChange(e);
+          onChange && onChange(e);
+        };
+        const handleBlur = (e: React.FocusEvent<HTMLInputElement, Element>) => {
+          field.onBlur();
+          onBlur && onBlur(e);
+        };
+        return (
+          <FormItem className="w-full">
+            {label && <FormLabel>{label}</FormLabel>}
+            <FormControl className="w-full">
+              <Input
+                placeholder={placeholder}
+                {...field}
+                {...rest}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                type={type}
+                className={cn("w-full", className)}
+              />
+            </FormControl>
+            {formDescription && <FormDescription>{formDescription}</FormDescription>}
+            <FormMessage />
+          </FormItem>
+        );
+      }}
     />
   );
 };

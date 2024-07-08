@@ -43,13 +43,13 @@ const StepSchema = z.object({
 });
 
 export const RecipeSchema = z.object({
-  recipeName: z.string(),
-  ingredientsList: z.array(IngredientSchema),
+  recipeName: z.string({required_error:"Please enter recipe name"}),
+  ingredientsList: z.array(IngredientSchema).min(1,{message:"Please add atleast one ingredient"}),
   description: z.string(),
   prepTime: z.string().datetime(),
   difficultyLevel: z.enum(["EASY", "MEDIUM", "ADVANCE"],{required_error:"Difficulty is required"}),
-  imgUrls: z.array(ImgUrlSchema),
-  steps: z.array(StepSchema),
+  imgUrls: z.array(ImgUrlSchema).min(1,{message:"Please add at least one image"}),
+  steps: z.array(StepSchema).min(1,{message:"Please add atleast one  step"}),
   cuisine: z.string(),
   course: z.enum(["BREAKFAST", "LUNCH", "DINNER"],{required_error:"Course is required"}),
   servings: z.coerce.number({invalid_type_error:"Servings must be a number"}).int().positive(),

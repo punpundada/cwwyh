@@ -13,11 +13,11 @@ import {
 } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import React, { useEffect, useRef, useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RecipeInsert, RecipeSchema } from "@/types/IRecipe";
 import TextAreatController from "@/components/form-control/TextAreatController";
-import { CheckIcon, Shell } from "lucide-react";
+import { CheckIcon, MoveUp, Shell, Trash2 } from "lucide-react";
 import { useIngredientList } from "@/hooks/useIngredientList";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
@@ -88,9 +88,45 @@ const AddRecipePage = () => {
     },
   });
 
+  const stepsForm = useFieldArray({
+    control: form.control,
+    name: "steps",
+  });
+
+  const ingredientsForm = useFieldArray({
+    control: form.control,
+    name: "ingredientsList",
+    keyName: "ingredientId",
+  });
+
   const formIngredientList = form.watch("ingredientsList");
 
-  const { ingredienList, setList } = useIngredientList();
+  const { ingredienList } = useIngredientList();
+
+  function handleLastInput(e: React.FormEvent<HTMLInputElement>, index: number): void {
+    if (stepsForm.fields.length - 1 === index) {
+      if (e.currentTarget.value.trim().length > 0) {
+        stepsForm.append(
+          {
+            step: "",
+          },
+          { shouldFocus: false }
+        );
+      }
+    }
+  }
+
+  React.useEffect(() => {
+    if (stepsForm.fields.length === 0) {
+      stepsForm.append(
+        {
+          step: "",
+        },
+        { shouldFocus: true }
+      );
+    }
+  }, [stepsForm.fields.length]);
+
   return (
     <>
       <BreadCrumbs names={["Recipe", "Add"]} />
@@ -104,7 +140,7 @@ const AddRecipePage = () => {
               <CardTitle>Step 1</CardTitle>
               <CardDescription>Basic Details</CardDescription>
             </CardHeader>
-            <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-4 ">
               <div className="col-span-1 md:col-span-2">
                 <InputController
                   control={form.control}
@@ -175,7 +211,7 @@ const AddRecipePage = () => {
             </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div className="col-span-1">
-                <Popover open={open} onOpenChange={setOpen}>
+                {/* <Popover open={open} onOpenChange={setOpen}>
                   <PopoverTrigger asChild ref={triggerRef}>
                     <Button
                       variant="outline"
@@ -185,7 +221,7 @@ const AddRecipePage = () => {
                     >
                       {value
                         ? ingredienList.find((ing) =>
-                            ing.label.toLowerCase().includes(label.toLowerCase())
+                            ing.id.toLowerCase().includes(label.toLowerCase())
                           )?.label
                         : `Select Ingredient`}
                       <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -214,14 +250,14 @@ const AddRecipePage = () => {
                                 value={ingredientItem.id}
                                 onSelect={(currentValue) => {
                                   setValue(currentValue);
-                                  form.setValue("ingredientsList", [
-                                    ...form.getValues("ingredientsList"),
-                                    { ingredientId: currentValue, quantity: "" },
-                                  ]);
-                                  setLabel(
-                                    ingredienList.find((x) => x.id === currentValue)
-                                      ?.label ?? ""
+                                  ingredientsForm.append(
+                                    {
+                                      ingredientId: currentValue,
+                                      quantity: "",
+                                    },
+                                    { shouldFocus: false }
                                   );
+                                  setLabel(currentValue);
                                   setOpen(false);
                                 }}
                               >
@@ -240,22 +276,17 @@ const AddRecipePage = () => {
                       </CommandList>
                     </Command>
                   </PopoverContent>
-                </Popover>
+                </Popover> */}
+                <ComboboxController name="filterIngredient" options={ingredienList} placeholder="Search for ingredients..." />
               </div>
               <div className="col-span-1 md:col-span-2 lg:col-span-3 space-y-4">
-                {formIngredientList.map((ingredient, index) => (
-                  <div
-                    className="grid grid-cols-3"
-                    key={ingredient.ingredientId}
-                  >
+                {ingredientsForm.fields.map((row, index) => (
+                  <div className="grid grid-cols-3" key={row.ingredientId}>
                     <div className="col-span-1">
-                      <div className="flex gap-4" key={ingredient.ingredientId}>
+                      <div className="flex gap-4">
                         {index + 1}.
                         <label htmlFor="" className="">
-                          {
-                            ingredienList.find((x) => x.id === ingredient.ingredientId)
-                              ?.label
-                          }
+                          {ingredienList.find((x) => x.id === row.ingredientId)?.label}
                         </label>
                       </div>
                     </div>
@@ -275,10 +306,52 @@ const AddRecipePage = () => {
           <Card className="w-full shadow-md">
             <CardHeader>
               <CardTitle>Step 3</CardTitle>
-              <CardDescription>Directions</CardDescription>
+              <CardDescription>Recipe Directions/Steps</CardDescription>
             </CardHeader>
-            <CardContent>
-              Steps/Directions
+            <CardContent className="space-y-4">
+              {stepsForm.fields.map((row, index) => {
+                return (
+                  <div className="flex gap-4 w-full" key={row.id}>
+                    <span className="w-[5%] text-center">{index + 1}.</span>
+                    <div className="w-[70%]">
+                      <InputController
+                        control={form.control}
+                        name={`steps.${index}.step`}
+                        placeholder="Step"
+                        onChange={(e) => handleLastInput(e, index)}
+                      />
+                    </div>
+                    <div className="w-[20%] flex gap-2">
+                    <Button
+                        variant={"outline"}
+                        className=""
+                        disabled={index === 0}
+                        onClick={() =>stepsForm.move(index,index-1)}
+                        type="button"
+                      >
+                        <MoveUp strokeWidth={1} />
+                      </Button>
+                      <Button
+                        variant={"outline"}
+                        className=""
+                        disabled={stepsForm.fields.length-1 === index}
+                        onClick={() => stepsForm.move(index,index+1)}
+                        type="button"
+                      >
+                        <MoveUp strokeWidth={1} className="rotate-180" />
+                      </Button>
+                      <Button
+                        variant={"outline"}
+                        className=""
+                        onClick={() => stepsForm.remove(index)}
+                        type="button"
+                      >
+                        <Trash2 strokeWidth={1} />
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })}
             </CardContent>
           </Card>
         </Container>
