@@ -2,10 +2,8 @@
 import React, { HTMLAttributes, useRef } from "react";
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
 import {
-  Control,
   FieldValues,
   Path,
-  SetFieldValue,
   useFormContext,
 } from "react-hook-form";
 import { cn } from "@/lib/utils";
@@ -29,7 +27,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 export type Options = {
-  value: string;
+  value?: string;
   label: string;
   id: string;
 };
@@ -40,7 +38,7 @@ interface ComboboxController<T extends FieldValues>
   options: Options[];
   placeholder: string;
   label?: string;
-  description?: string | React.ReactNode;
+  description?: React.ReactNode;
 }
 
 const ComboboxController = <T extends FieldValues>({
@@ -51,8 +49,10 @@ const ComboboxController = <T extends FieldValues>({
   description,
   ...rest
 }: ComboboxController<T>) => {
-  const { control, setValue } = useFormContext();
+  const [open, setOpen] = React.useState(false);
+  const { control, setValue ,clearErrors} = useFormContext();
   const triggerRef = useRef<HTMLButtonElement>(null);
+
 
   return (
     <FormField
@@ -61,86 +61,8 @@ const ComboboxController = <T extends FieldValues>({
       render={({ field }) => (
         <FormItem>
           {label && <FormLabel>{label}</FormLabel>}
-          <Popover>
+          <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild ref={triggerRef}>
-              <Button
-                variant="outline"
-                role="combobox"
-                className="w-full justify-between h-[36px]"
-              >
-                {field.value
-                  ? options.find((options) =>
-                      options.id
-                        .toLowerCase()
-                        .includes(field.value.toLowerCase())
-                    )?.label
-                  : `Select ${placeholder}`}
-                <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent
-              className="min-w-[300px] p-0"
-              style={{ width: triggerRef?.current?.offsetWidth }}
-            >
-              <Command>
-                <CommandInput
-                  placeholder={`Search ${placeholder}...`}
-                  className="h-9"
-                />
-                <CommandList>
-                  <CommandEmpty>No {placeholder} found.</CommandEmpty>
-                  <CommandGroup>
-                    {options.map((option) => (
-                      <CommandItem
-                        key={option.id}
-                        value={option.id}
-                        onSelect={(currentValue) => {
-                          setValue(
-                            name,
-                            (currentValue === field.value
-                              ? ""
-                              : currentValue) as any
-                          );
-                        }}
-                      >
-                        {option.label}
-                        <CheckIcon
-                        className={cn(
-                          "ml-auto h-4 w-4",
-                          option.value === field.value ? "opacity-100" : "opacity-0"
-                        )}
-                      />
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
-  );
-};
-
-export default ComboboxController;
-
-/*
-
-
-*/
-
-
-/*
-    <FormField
-      control={control}
-      name={name}
-      render={({ field }) => (
-        <FormItem className="flex flex-col">
-          {label && <FormLabel>{label}</FormLabel>}
-          <Popover>
-            <PopoverTrigger asChild>
               <FormControl>
                 <Button
                   variant="outline"
@@ -151,35 +73,49 @@ export default ComboboxController;
                   )}
                 >
                   {field.value
-                    ? options.find((option) => option.value === field.value)?.label
-                    : `Select ${label}`}
+                    ? options.find((option) => option.id === field.value)?.label
+                    : `Select ${placeholder}`}
                   <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </FormControl>
             </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-0">
+            <PopoverContent
+              className="min-w-[300px] p-0"
+              style={{ width: triggerRef?.current?.offsetWidth }}
+            >
               <Command>
-                <CommandInput placeholder={`Search ${label}...`} className="h-9" />
-                <CommandEmpty>No {label} found.</CommandEmpty>
-                <CommandGroup>
-                  {options.map((option) => (
-                    <CommandItem
-                      value={option.label}
-                      key={option.value}
-                      onSelect={() => {
-                        setValue(name as Path<T>, option.value as any);
-                      }}
-                    >
-                      {option.label}
-                      <CheckIcon
-                        className={cn(
-                          "ml-auto h-4 w-4",
-                          option.value === field.value ? "opacity-100" : "opacity-0"
-                        )}
-                      />
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
+                <CommandInput placeholder={`Search ${placeholder}...`} className="h-9" />
+                <CommandList>
+                  <CommandEmpty>No {placeholder}(s) found.</CommandEmpty>
+                  <CommandGroup>
+                    {options.map((option) => (
+                      <CommandItem
+                        key={option.id}
+                        value={option.label}
+                        onSelect={(currentValue) => {
+                          
+                          const data = options.find((x) => x.label === currentValue);
+                          setValue(
+                            name,
+                            (data?.id === field.value ? "" : data?.id) as any
+                          );
+                          if(currentValue){
+                            clearErrors(name)
+                          }
+                          setOpen(false);
+                        }}
+                      >
+                        {option.label}
+                        <CheckIcon
+                          className={cn(
+                            "ml-auto h-4 w-4",
+                            option.id === field.value ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
               </Command>
             </PopoverContent>
           </Popover>
@@ -188,4 +124,7 @@ export default ComboboxController;
         </FormItem>
       )}
     />
-*/
+  );
+};
+
+export default ComboboxController;
