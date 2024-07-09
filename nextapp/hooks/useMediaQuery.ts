@@ -11,14 +11,17 @@ export function useMediaQuery(key: keyof typeof useMediaQueryProps) {
   const [isMatch, setIsMatch] = useState(false);
 
   useEffect(() => {
-    if(!window) return
+    if (!window) return;
     const matchQueryList = window.matchMedia(useMediaQueryProps[key]);
-    function handleChange(e: MediaQueryListEvent) {
-      setIsMatch(e.matches);
+    if (matchQueryList.matches !== isMatch) {
+      setIsMatch(matchQueryList.matches);
     }
-    matchQueryList.addEventListener("change", handleChange);
+
+    const listener = () => setIsMatch(matchQueryList.matches);
+
+    window.addEventListener("resize", listener);
     return () => {
-      matchQueryList.removeEventListener("change", handleChange);
+      matchQueryList.removeEventListener("resize", listener);
     };
   }, [key]);
 
