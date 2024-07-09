@@ -55,6 +55,7 @@ export const RecipeSchema = z.object({
   servings: z.coerce.number({invalid_type_error:"Servings must be a number"}).int().positive(),
   cookingTime: z.string().datetime(),
   calories: z.string(),
+  filterIngredient:z.string().optional().nullable()
 });
 
 export type RecipeInsert = z.infer<typeof RecipeSchema>;

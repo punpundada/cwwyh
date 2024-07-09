@@ -26,16 +26,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 export type Options = {
   value: string;
   label: string;
-  id:string
+  id: string;
 };
 
 interface ComboboxController<T extends FieldValues>
@@ -44,6 +40,7 @@ interface ComboboxController<T extends FieldValues>
   options: Options[];
   placeholder: string;
   label?: string;
+  description?: string | React.ReactNode;
 }
 
 const ComboboxController = <T extends FieldValues>({
@@ -51,11 +48,11 @@ const ComboboxController = <T extends FieldValues>({
   options,
   placeholder,
   label,
+  description,
   ...rest
 }: ComboboxController<T>) => {
   const { control, setValue } = useFormContext();
   const triggerRef = useRef<HTMLButtonElement>(null);
-  const [open, setOpen] = React.useState(false);
 
   return (
     <FormField
@@ -64,12 +61,11 @@ const ComboboxController = <T extends FieldValues>({
       render={({ field }) => (
         <FormItem>
           {label && <FormLabel>{label}</FormLabel>}
-          <Popover open={open} onOpenChange={setOpen}>
+          <Popover>
             <PopoverTrigger asChild ref={triggerRef}>
               <Button
                 variant="outline"
                 role="combobox"
-                aria-expanded={open}
                 className="w-full justify-between h-[36px]"
               >
                 {field.value
@@ -94,10 +90,10 @@ const ComboboxController = <T extends FieldValues>({
                 <CommandList>
                   <CommandEmpty>No {placeholder} found.</CommandEmpty>
                   <CommandGroup>
-                    {options.map((options) => (
+                    {options.map((option) => (
                       <CommandItem
-                        key={options.id}
-                        value={options.id}
+                        key={option.id}
+                        value={option.id}
                         onSelect={(currentValue) => {
                           setValue(
                             name,
@@ -105,18 +101,15 @@ const ComboboxController = <T extends FieldValues>({
                               ? ""
                               : currentValue) as any
                           );
-                          setOpen(false);
                         }}
                       >
-                        {options.label}
+                        {option.label}
                         <CheckIcon
-                          className={cn(
-                            "ml-auto h-4 w-4",
-                            field.value === options.value
-                              ? "opacity-100"
-                              : "opacity-0"
-                          )}
-                        />
+                        className={cn(
+                          "ml-auto h-4 w-4",
+                          option.value === field.value ? "opacity-100" : "opacity-0"
+                        )}
+                      />
                       </CommandItem>
                     ))}
                   </CommandGroup>
@@ -132,3 +125,67 @@ const ComboboxController = <T extends FieldValues>({
 };
 
 export default ComboboxController;
+
+/*
+
+
+*/
+
+
+/*
+    <FormField
+      control={control}
+      name={name}
+      render={({ field }) => (
+        <FormItem className="flex flex-col">
+          {label && <FormLabel>{label}</FormLabel>}
+          <Popover>
+            <PopoverTrigger asChild>
+              <FormControl>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  className={cn(
+                    "w-full justify-between h-[36px]",
+                    !field.value && "text-muted-foreground"
+                  )}
+                >
+                  {field.value
+                    ? options.find((option) => option.value === field.value)?.label
+                    : `Select ${label}`}
+                  <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </FormControl>
+            </PopoverTrigger>
+            <PopoverContent className="w-[200px] p-0">
+              <Command>
+                <CommandInput placeholder={`Search ${label}...`} className="h-9" />
+                <CommandEmpty>No {label} found.</CommandEmpty>
+                <CommandGroup>
+                  {options.map((option) => (
+                    <CommandItem
+                      value={option.label}
+                      key={option.value}
+                      onSelect={() => {
+                        setValue(name as Path<T>, option.value as any);
+                      }}
+                    >
+                      {option.label}
+                      <CheckIcon
+                        className={cn(
+                          "ml-auto h-4 w-4",
+                          option.value === field.value ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </Command>
+            </PopoverContent>
+          </Popover>
+          {description && <FormDescription>{description}</FormDescription>}
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+*/
