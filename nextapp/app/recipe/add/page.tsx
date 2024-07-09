@@ -14,13 +14,14 @@ import {
 } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import React from "react";
-import {  useFieldArray, useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RecipeInsert, RecipeSchema } from "@/types/IRecipe";
 import TextAreatController from "@/components/form-control/TextAreatController";
-import {  MoveUp,  Trash2 } from "lucide-react";
+import { MoveUp, Trash2 } from "lucide-react";
 import { useIngredientList } from "@/hooks/useIngredientList";
 import { Button } from "@/components/ui/button";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 const radioOptions = [
   { value: "EASY", label: "EASY" },
@@ -57,17 +58,15 @@ const options = [
   },
 ];
 
-
 const AddRecipePage = () => {
-
   const form = useForm<RecipeInsert>({
     resolver: zodResolver(RecipeSchema),
     mode: "onChange",
     defaultValues: {
       recipeName: "",
       description: "",
-      course: "BREAKFAST",
-      difficultyLevel: "EASY",
+      course: "",
+      difficultyLevel: "",
       servings: 1,
       cuisine: "",
       calories: "",
@@ -90,29 +89,31 @@ const AddRecipePage = () => {
     name: "ingredientsList",
   });
 
-
   const filterIngredient = form.watch("filterIngredient");
 
   const { ingredienList, setList } = useIngredientList();
 
- const handleLastInput = React.useCallback((e: React.FormEvent<HTMLInputElement>, index: number)=> {
-    if (stepsForm.fields.length - 1 !== index) return;
-    if (e.currentTarget.value.trim().length <= 0) return;
+  const handleLastInput = React.useCallback(
+    (e: React.FormEvent<HTMLInputElement>, index: number) => {
+      if (stepsForm.fields.length - 1 !== index) return;
+      if (e.currentTarget.value.trim().length <= 0) return;
 
-    stepsForm.append(
-      {
-        step: "",
-      },
-      { shouldFocus: false }
-    );
-  },[stepsForm.fields.length,stepsForm.append])
+      stepsForm.append(
+        {
+          step: "",
+        },
+        { shouldFocus: false }
+      );
+    },
+    [stepsForm.fields.length, stepsForm.append]
+  );
 
   function handleFindValue(rowId: string) {
     return ingredienList.find((x) => x.id === rowId)?.label;
   }
 
-  function onSumbit(data:RecipeInsert){
-    console.log(data)
+  function onSumbit(data: RecipeInsert) {
+    console.log(data);
   }
 
   React.useEffect(() => {
@@ -140,10 +141,6 @@ const AddRecipePage = () => {
     setList(ingredienList.filter((x) => x.id !== ingredient.id));
     form.resetField("filterIngredient");
   }, [ingredientsForm.append, filterIngredient]);
-
-  React.useEffect(()=>{
-    console.log(form.formState.errors)
-  },[form.formState])
 
   return (
     <>
