@@ -11,6 +11,7 @@ export function useMediaQuery(key: keyof typeof useMediaQueryProps) {
   const [isMatch, setIsMatch] = useState(false);
 
   useEffect(() => {
+    if(!window) return
     const matchQueryList = window.matchMedia(useMediaQueryProps[key]);
     function handleChange(e: MediaQueryListEvent) {
       setIsMatch(e.matches);

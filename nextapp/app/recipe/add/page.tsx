@@ -8,29 +8,19 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
-import React, { useEffect, useRef, useState } from "react";
-import { FormProvider, useFieldArray, useForm } from "react-hook-form";
+import React from "react";
+import {  useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RecipeInsert, RecipeSchema } from "@/types/IRecipe";
 import TextAreatController from "@/components/form-control/TextAreatController";
-import { CheckIcon, MoveUp, Shell, Trash2 } from "lucide-react";
+import {  MoveUp,  Trash2 } from "lucide-react";
 import { useIngredientList } from "@/hooks/useIngredientList";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { CaretSortIcon } from "@radix-ui/react-icons";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import { cn } from "@/lib/utils";
 
 const radioOptions = [
   { value: "EASY", label: "EASY" },
@@ -60,13 +50,15 @@ const options = [
     label: "option 3",
     id: "3",
   },
+  {
+    value: "value 3",
+    label: "label 3",
+    id: "4",
+  },
 ];
-//
+
+
 const AddRecipePage = () => {
-  const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
-  const [label, setLabel] = useState("");
-  const triggerRef = useRef<HTMLButtonElement>(null);
 
   const form = useForm<RecipeInsert>({
     resolver: zodResolver(RecipeSchema),
@@ -85,7 +77,7 @@ const AddRecipePage = () => {
       imgUrls: [],
       ingredientsList: [],
       steps: [],
-    },
+    } as any,
   });
 
   const stepsForm = useFieldArray({
@@ -97,6 +89,7 @@ const AddRecipePage = () => {
     control: form.control,
     name: "ingredientsList",
   });
+
 
   const filterIngredient = form.watch("filterIngredient");
 
@@ -116,6 +109,10 @@ const AddRecipePage = () => {
 
   function handleFindValue(rowId: string) {
     return ingredienList.find((x) => x.id === rowId)?.label;
+  }
+
+  function onSumbit(data:RecipeInsert){
+    console.log(data)
   }
 
   React.useEffect(() => {
@@ -144,6 +141,10 @@ const AddRecipePage = () => {
     form.resetField("filterIngredient");
   }, [ingredientsForm.append, filterIngredient]);
 
+  React.useEffect(()=>{
+    console.log(form.formState.errors)
+  },[form.formState])
+
   return (
     <>
       <BreadCrumbs names={["Recipe", "Add"]} />
@@ -151,6 +152,7 @@ const AddRecipePage = () => {
         <Container
           className="flex-col w-[95%] md:w-[95%] gap-4 bg-background pb-4"
           component="form"
+          onSubmit={form.handleSubmit(onSumbit)}
         >
           <Card className="w-full shadow-md">
             <CardHeader>
@@ -177,7 +179,7 @@ const AddRecipePage = () => {
               <InputController
                 control={form.control}
                 name="calories"
-                placeholder="Calories"
+                placeholder="Calories (Kcal)"
                 className="w-full"
                 label="Calories in kcal"
               />
@@ -375,6 +377,9 @@ const AddRecipePage = () => {
                 );
               })}
             </CardContent>
+            <CardFooter>
+              <Button type="submit">Save Recipe</Button>
+            </CardFooter>
           </Card>
         </Container>
       </Form>
