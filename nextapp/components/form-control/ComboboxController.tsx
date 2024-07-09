@@ -59,6 +59,13 @@ const ComboboxController = <T extends FieldValues>({
   const form = useFormContext();
   const triggerRef = useRef<HTMLButtonElement>(null);
   const isDesktop = useMediaQuery("md");
+  const inputRef = React.useRef<HTMLInputElement | null>(null);
+
+  const handleClick = () => {
+    const current = inputRef?.current;
+    if (!current) return;
+    current.focus();
+  };
 
   if (isDesktop) {
     return (
@@ -78,6 +85,7 @@ const ComboboxController = <T extends FieldValues>({
                       "w-full justify-between h-[36px]",
                       !field.value && "text-muted-foreground"
                     )}
+                    onClick={handleClick}
                   >
                     {field.value
                       ? options.find((option) => option.id === field.value)?.label
@@ -97,6 +105,7 @@ const ComboboxController = <T extends FieldValues>({
                   options={options}
                   setOpen={setOpen}
                   placeholder={placeholder}
+                  ref={inputRef}
                 />
               </PopoverContent>
             </Popover>
@@ -124,7 +133,8 @@ const ComboboxController = <T extends FieldValues>({
                     "w-full justify-between h-[36px]",
                     !field.value && "text-muted-foreground"
                   )}
-                >
+                  onClick={handleClick}
+                  >
                   {field.value
                     ? options.find((option) => option.id === field.value)?.label
                     : `Select ${placeholder}`}
@@ -144,6 +154,7 @@ const ComboboxController = <T extends FieldValues>({
                 options={options}
                 setOpen={setOpen}
                 placeholder={placeholder}
+                ref={inputRef}
               />
             </DrawerContent>
           </Drawer>
@@ -166,18 +177,18 @@ interface OptionList<T extends FieldValues> {
   setOpen: (val: boolean) => void;
 }
 
-const OptionList = React.memo(
-  <T extends FieldValues>({
-    placeholder,
-    options,
-    field,
-    form,
-    name,
-    setOpen,
-  }: OptionList<T>) => {
+const OptionList = React.forwardRef(
+  <T extends FieldValues>(
+    { placeholder, options, field, form, name, setOpen }: OptionList<T>,
+    ref: React.ForwardedRef<HTMLInputElement | null>
+  ) => {
     return (
       <Command>
-        <CommandInput placeholder={`Search ${placeholder}...`} className="h-9" />
+        <CommandInput
+          placeholder={`Search ${placeholder}...`}
+          className="h-9"
+          ref={ref}
+        />
         <CommandList>
           <CommandEmpty>No {placeholder}(s) found.</CommandEmpty>
           <CommandGroup>
