@@ -96,24 +96,26 @@ const AddRecipePage = () => {
   const ingredientsForm = useFieldArray({
     control: form.control,
     name: "ingredientsList",
-    keyName: "ingredientId",
   });
 
-  const formIngredientList = form.watch("ingredientsList");
+  const filterIngredient = form.watch("filterIngredient");
 
-  const { ingredienList } = useIngredientList();
+  const { ingredienList, setList } = useIngredientList();
 
-  function handleLastInput(e: React.FormEvent<HTMLInputElement>, index: number): void {
-    if (stepsForm.fields.length - 1 === index) {
-      if (e.currentTarget.value.trim().length > 0) {
-        stepsForm.append(
-          {
-            step: "",
-          },
-          { shouldFocus: false }
-        );
-      }
-    }
+ const handleLastInput = React.useCallback((e: React.FormEvent<HTMLInputElement>, index: number)=> {
+    if (stepsForm.fields.length - 1 !== index) return;
+    if (e.currentTarget.value.trim().length <= 0) return;
+
+    stepsForm.append(
+      {
+        step: "",
+      },
+      { shouldFocus: false }
+    );
+  },[stepsForm.fields.length,stepsForm.append])
+
+  function handleFindValue(rowId: string) {
+    return ingredienList.find((x) => x.id === rowId)?.label;
   }
 
   React.useEffect(() => {
@@ -126,6 +128,21 @@ const AddRecipePage = () => {
       );
     }
   }, [stepsForm.fields.length]);
+
+  React.useEffect(() => {
+    if (!filterIngredient) return;
+    const ingredient = ingredienList.find(
+      (x) => x.id.toString() === filterIngredient.toString()
+    );
+    if (!ingredient) return;
+
+    ingredientsForm.append({
+      ingredientId: ingredient.id,
+      quantity: "",
+    });
+    setList(ingredienList.filter((x) => x.id !== ingredient.id));
+    form.resetField("filterIngredient");
+  }, [ingredientsForm.append, filterIngredient]);
 
   return (
     <>
@@ -277,7 +294,11 @@ const AddRecipePage = () => {
                     </Command>
                   </PopoverContent>
                 </Popover> */}
-                <ComboboxController name="filterIngredient" options={ingredienList} placeholder="Search for ingredients..." />
+                <ComboboxController
+                  name="filterIngredient"
+                  options={ingredienList}
+                  placeholder="Search for"
+                />
               </div>
               <div className="col-span-1 md:col-span-2 lg:col-span-3 space-y-4">
                 {ingredientsForm.fields.map((row, index) => (
@@ -286,7 +307,7 @@ const AddRecipePage = () => {
                       <div className="flex gap-4">
                         {index + 1}.
                         <label htmlFor="" className="">
-                          {ingredienList.find((x) => x.id === row.ingredientId)?.label}
+                          {handleFindValue(row.ingredientId)}
                         </label>
                       </div>
                     </div>
@@ -322,11 +343,11 @@ const AddRecipePage = () => {
                       />
                     </div>
                     <div className="w-[20%] flex gap-2">
-                    <Button
+                      <Button
                         variant={"outline"}
                         className=""
                         disabled={index === 0}
-                        onClick={() =>stepsForm.move(index,index-1)}
+                        onClick={() => stepsForm.move(index, index - 1)}
                         type="button"
                       >
                         <MoveUp strokeWidth={1} />
@@ -334,8 +355,8 @@ const AddRecipePage = () => {
                       <Button
                         variant={"outline"}
                         className=""
-                        disabled={stepsForm.fields.length-1 === index}
-                        onClick={() => stepsForm.move(index,index+1)}
+                        disabled={stepsForm.fields.length - 1 === index}
+                        onClick={() => stepsForm.move(index, index + 1)}
                         type="button"
                       >
                         <MoveUp strokeWidth={1} className="rotate-180" />
@@ -345,6 +366,7 @@ const AddRecipePage = () => {
                         className=""
                         onClick={() => stepsForm.remove(index)}
                         type="button"
+                        disabled={stepsForm.fields.length <= 1}
                       >
                         <Trash2 strokeWidth={1} />
                       </Button>
