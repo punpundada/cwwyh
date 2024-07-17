@@ -3,6 +3,7 @@ import { Constants } from "../Constants";
 import { NextFunction, Request, Response } from "express";
 import { ReqUser } from "../types/user";
 import env from "../lib/env";
+import { CustomError } from "../lib/utils";
 
 const ValidateToken = async (req:Request<any,any,any>, res:Response, next:NextFunction) => {
   let token;
@@ -13,17 +14,15 @@ const ValidateToken = async (req:Request<any,any,any>, res:Response, next:NextFu
       token = authHeader.split(" ")[1];
       jwt.verify(token, env.ACCESS_TOKEN_SECRET, (err, decoded) => {
         if (err) {
-          return res
-            .status(Constants.UNAUTHORIZED)
-            .json({ isSuccess: false, data: { message: err.message } });
+          const cusErr = new CustomError(err.message,Constants.UNAUTHORIZED);
+          return next(cusErr)
         }
         res.locals = decoded.user;
         next();
       });
     } else {
-      return res
-        .status(Constants.UNAUTHORIZED)
-        .json({ isSuccess: false, data: { message: "Unautorized User" } });
+      const cusErr = new CustomError("Unautorized User",Constants.UNAUTHORIZED);
+      next(cusErr)
     }
   } catch (error) {
     console.error(error)
