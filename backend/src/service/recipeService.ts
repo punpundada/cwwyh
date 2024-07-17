@@ -2,7 +2,7 @@ import { getModifiedRecipe } from "../lib/recipe";
 import { IngredientModel } from "../models/IngredientModel";
 import RecipeModel, { RecipeType } from "../models/RecipeModel";
 import User from "../models/UserModel";
-import { RecipeZodType } from "../types/recipe";
+import { RecipeSelectType, RecipeZodType } from "../types/recipe";
 
 export default class RecipeService {
   static async getRecipeByNameAndUserId(name: string, userId: string) {
@@ -67,5 +67,9 @@ export default class RecipeService {
       .lean()
       .exec();
     return getModifiedRecipe(foundRecipe);
+  }
+
+  static async update(recipe:RecipeSelectType){
+    return await RecipeModel.updateOne({_id:recipe._id},recipe)
   }
 }
