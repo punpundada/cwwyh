@@ -23,7 +23,10 @@ export default class RecipeService {
   static async getAllRecipies(page: number, search: string) {
     const perPageItems = 9;
     let query = {} as any;
-    const pageNumber = Math.abs(+page)-1 || 0;
+    let pageNumber = Math.abs(+page) - 1 ?? 0;
+    if (pageNumber < 0) {
+      pageNumber = 0;
+    }
     const searchRecipe = search;
     if (searchRecipe) {
       const searchRecipeRegex = new RegExp(searchRecipe, "i");
@@ -69,7 +72,7 @@ export default class RecipeService {
     return getModifiedRecipe(foundRecipe);
   }
 
-  static async update(recipe:RecipeSelectType){
-    return await RecipeModel.updateOne({_id:recipe._id},recipe)
+  static async update(recipe: RecipeSelectType) {
+    return await RecipeModel.updateOne({ _id: recipe._id }, recipe);
   }
 }
