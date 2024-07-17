@@ -76,6 +76,7 @@ const RecipeSchema = new Schema(
     notes: {
       type: String,
     },
+    mm:String
   },
   {
     timestamps: true,

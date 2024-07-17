@@ -10,6 +10,7 @@ import DifficuiltyLevelRoute from './routes/DifficultyLevelRoute';
 import  env  from './lib/env';
 import { commentRoute } from './routes/CommentRoute';
 import { likeRoute } from './routes/LikeRoute';
+import errorHandler from './middleware/errorHandler';
 
 const app = express();
 const port = env.PORT || 9002;
@@ -29,7 +30,7 @@ app.use('/api/likes', likeRoute);
 app.use("*",(req,res)=>{
     res.status(Constants.NOT_FOUND).json({ message: 'URL you are looking for does not exist' });
 })
-
+app.use(errorHandler)
 app.listen(port , ()=>{
     console.log(`\nListning on http://localhost:${port}`);  
 });

@@ -1,8 +1,9 @@
 import { Constants } from "../Constants";
 import RecipeModel from "../models/RecipeModel";
-import { Request, Response } from "express";
-import { RecipeZodType, zodRecipeSchema } from "../types/recipe";
+import { NextFunction, Request, Response } from "express";
+import { RecipeSelectType, RecipeZodType, zodRecipeSchema } from "../types/recipe";
 import RecipeService from "../service/recipeService";
+import { GenericResponse } from "../types/res";
 
 const addRecipe = async (req: Request<any, any, RecipeZodType>, res: Response) => {
   try {
@@ -247,6 +248,34 @@ const getOneRecipe = async (req: Request<{ id: string }>, res) => {
   }
 };
 
+const updateRecipe = async (
+  req:Request<{id:string},unknown,RecipeSelectType>,
+  res:Response<GenericResponse<RecipeSelectType>>,
+  next:NextFunction
+)=>{
+  try {
+    if(req.params.id !== req.body._id){
+      return res.status(Constants.VALIDATION_ERROR).json({
+        isSuccess:false,
+        issues:[],
+        message:"Invalid ids"
+      })
+    }
+    
+    const data =  await RecipeService.update(req.body);
+    console.log(data);
+    if(data){
+      return res.status(Constants.OK).json({
+        isSuccess:true,
+        message:"Recipe Updated",
+        result:data as any
+      })
+    }
+  } catch (error) {
+    next(error)
+  }
+}
+
 export {
   addRecipe,
   deleteRecipe,
@@ -255,4 +284,5 @@ export {
   deleteOneImage,
   getAllRecipes,
   getOneRecipe,
+  updateRecipe,
 };
