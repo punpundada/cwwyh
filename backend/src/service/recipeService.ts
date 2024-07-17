@@ -34,8 +34,9 @@ export default class RecipeService {
     }
 
     const foundRecipes = await RecipeModel.find(query)
-      .skip(perPageItems * pageNumber)
-      .limit(perPageItems)
+      ?.skip(perPageItems * pageNumber)
+      ?.limit(perPageItems)
+      ?.sort({createdAt:-1})
       ?.populate({
         path: "userId",
         model: User,
@@ -57,18 +58,18 @@ export default class RecipeService {
 
   static async getRecipeById(recipeId: string) {
     const foundRecipe = await RecipeModel.findById(recipeId)
-      .populate({
+      ?.populate({
         path: "userId",
         model: User,
         select: ["firstName", "lastName"],
       })
-      .populate({
+      ?.populate({
         path: "ingredientsList.ingredientId",
         model: IngredientModel,
         select: ["ingredientName"],
       })
-      .lean()
-      .exec();
+      ?.lean()
+      ?.exec();
     return getModifiedRecipe(foundRecipe);
   }
 
