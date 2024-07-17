@@ -1,6 +1,5 @@
 import mongoose, { Types, InferSchemaType } from "mongoose";
 const { Schema } = mongoose;
-import { z } from "zod";
 
 const RecipeSchema = new Schema(
   {
@@ -12,10 +11,6 @@ const RecipeSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "User",
       required: [true, "UserId is a Required Field"],
-    },
-    userName: {
-      type: String,
-      required: false,
     },
     ingredientsList: [
       {
@@ -33,12 +28,16 @@ const RecipeSchema = new Schema(
       minlength: [150, "Description should be at least 10 characters long."],
     },
     prepTime: {
-      type: Date,
+      type: Number,
       required: [true, "Prepration Time is a Required Field"],
     },
+    cookingTime: {
+      type: Number,
+      required: [true, "Cooking time is required"],
+    },
     difficultyLevel: {
-      type: Schema.Types.ObjectId,
-      ref: "DifficultyLevel",
+      type: String,
+      enum: ["EASY", "MEDIUM", "ADVANCE"],
       required: [true, "Difficulty Level is a Required Field"],
     },
     imgUrls: [
@@ -66,20 +65,29 @@ const RecipeSchema = new Schema(
       enum: ["DINNER", "LUNCH", "BREAKFAST"],
       require: [true, "Course is a required field"],
     },
+    servings: {
+      type: Number,
+      required: [true, "Servings is a required field"],
+    },
+    calories: {
+      type: Number,
+      required: [true, "Calories is a required field"],
+    },
+    notes: {
+      type: String,
+    },
   },
   {
     timestamps: true,
-    query:{
-      byName(recipeName:string){
-        return this.where({recipeName: new RegExp(recipeName,'i')})
-      }
-    }
-  },
+    query: {
+      byName(recipeName: string) {
+        return this.where({ recipeName: new RegExp(recipeName, "i") });
+      },
+    },
+  }
 );
 
 export type RecipeType = InferSchemaType<typeof RecipeSchema>;
 
 const RecipeModel = mongoose.model("Recipes", RecipeSchema);
 export default RecipeModel;
-
-
