@@ -4,7 +4,7 @@ import { NextFunction, Request, Response } from "express";
 import { ReqUser } from "../types/user";
 import env from "../lib/env";
 
-const ValidateToken = async (req:Request<any,any,ReqUser<Record<string,unknown>>>, res:Response, next:NextFunction) => {
+const ValidateToken = async (req:Request<any,any,any>, res:Response, next:NextFunction) => {
   let token;
   let authHeader = req.headers.authorization || req.headers.Authorization;
   try {
@@ -17,8 +17,7 @@ const ValidateToken = async (req:Request<any,any,ReqUser<Record<string,unknown>>
             .status(Constants.UNAUTHORIZED)
             .json({ isSuccess: false, data: { message: err.message } });
         }
-        req.body.reqBody = req.body;
-        req.body.user = decoded.user;
+        res.locals = decoded.user;
         next();
       });
     } else {

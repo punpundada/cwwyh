@@ -1,76 +1,45 @@
 import { Constants } from "../Constants";
-import RecipeModel, {
-  RecipeType,
-} from "../models/RecipeModel";
-import User from "../models/UserModel";
-import { IngredientModel } from "../models/IngredientModel";
-import DifficultyLevelModel from "../models/DifficultyLevel";
-import { getModifiedRecipe } from "../lib/recipe";
+import RecipeModel from "../models/RecipeModel";
 import { Request, Response } from "express";
-import { ReqUser } from "../types/user";
-import { error } from "console";
-import { ZodError } from "zod";
-import { zodRecipeSchema } from "../types/recipe";
+import { RecipeZodType, zodRecipeSchema } from "../types/recipe";
+import RecipeService from "../service/recipeService";
 
-const addRecipe = async (
-  req: Request<any, any, ReqUser<RecipeType>>,
-  res: Response
-) => {
+const addRecipe = async (req: Request<any, any, RecipeZodType>, res: Response) => {
   try {
+    req.body.userId = res.locals.id;
 
-    const {
-      recipeName,
-      userId,
-      ingredientsList,
-      description,
-      difficultyLevel,
-      imgUrls,
-      prepTime,
-      steps,
-      userName,
-    } = zodRecipeSchema.parse(req.body.reqBody);
+    const validRecipe = zodRecipeSchema.parse(req.body);
 
-    const foundRecipe = await RecipeModel.findOne({
-      recipeName: recipeName,
-      userId,
-    });
+    const foundRecipe = await RecipeService.getRecipeByNameAndUserId(
+      validRecipe.recipeName,
+      validRecipe.userId
+    );
 
     if (foundRecipe) {
       return res.status(Constants.FORBIDDEN).json({
         isSuccess: false,
         data: {
-          message: `User with id: ${userId} has already Recipe with name: ${recipeName}`,
+          message: `User has already Recipe with name: ${validRecipe.recipeName}`,
         },
       });
     }
 
-    const newRecipe = await RecipeModel.create({
-      recipeName: recipeName,
-      userId,
-      ingredientsList,
-      description,
-      prepTime,
-      difficultyLevel,
-      imgUrls,
-      steps,
-    });
+    const newRecipe = await RecipeService.saveRecipe(validRecipe);
 
     if (newRecipe) {
       return res.status(Constants.CREATED).json({
         isSuccess: true,
         data: { message: `New Recipe with id:${newRecipe?._id} is created ` },
       });
-    } else {
-      return res.status(Constants.SERVER_ERROR).json({
-        isSuccess: false,
-        data: { message: "Something went wrong" },
-      });
     }
+    return res.status(Constants.SERVER_ERROR).json({
+      isSuccess: false,
+      data: { message: "Something went wrong" },
+    });
   } catch (error) {
-    const errorMessages = JSON.parse(error.message).map(error => error.message);
     return res
       .status(Constants.SERVER_ERROR)
-      .json({ isSuccess: false, data: { message:errorMessages , issues:error.issues} });
+      .json({ isSuccess: false, data: { message: error.message, issues: error.issues } });
   }
 };
 
@@ -83,7 +52,7 @@ const deleteRecipe = async (req, res) => {
         .json({ isSuccess: false, data: { message: "Recipe id is required" } });
     }
 
-    const deletadRecipe = await RecipeModel.findByIdAndDelete({ _id: id });
+    const deletadRecipe = await RecipeService.deleteById(id);
     if (deletadRecipe) {
       return res.status(Constants.OK).json({
         isSuccess: true,
@@ -131,15 +100,9 @@ const getRecipesByIngredients = async (req, res) => {
   }
 };
 
-//call this method only when  a recipe is already pressent and you want to add images
 const addRecipeImageUrl = async (req, res) => {
   const { newImgUrls, recipeId } = req.body;
-  if (
-    !newImgUrls ||
-    !recipeId ||
-    !Array.isArray(newImgUrls) ||
-    newImgUrls.length === 0
-  ) {
+  if (!newImgUrls || !recipeId || !Array.isArray(newImgUrls) || newImgUrls.length === 0) {
     return res.status(Constants.VALIDATION_ERROR).json({
       isSuccess: false,
       data: { message: "Image URLs and Recipe Id is a Required Field" },
@@ -232,54 +195,28 @@ const deleteOneImage = async (req, res) => {
   }
 };
 
-const getAllRecipes = async (req, res) => {
-  const perPageItems = 9;
+const getAllRecipes = async (
+  req: Request<unknown, unknown, unknown, { page: number; search: string }>,
+  res
+) => {
   try {
-    let query = {} as any;
-    const pageNumber = Math.abs(req.query.page) || 0;
-    const searchRecipe = req.query.search;
-    if (searchRecipe) {
-      const searchRecipeRegex = new RegExp(searchRecipe, "i");
-      query.recipeName = { $regex: searchRecipeRegex };
-    }
-    const foundRecipes = await RecipeModel.find(query)
-      .skip(perPageItems * pageNumber)
-      .limit(perPageItems)
-      ?.populate({
-        path: "userId",
-        model: User,
-        select: ["firstName", "lastName"],
-      })
-      ?.populate({
-        path: "ingredientsList.ingredientId",
-        model: IngredientModel,
-        select: ["ingredientName"],
-      })
-      ?.populate({
-        path: "difficultyLevel",
-        model: DifficultyLevelModel,
-        select: ["level"],
-      })
-      ?.lean()
-      ?.exec();
-
-    const modifiedRecipes = foundRecipes?.map((recipe) => {
-      return getModifiedRecipe(recipe);
-    });
+    const modifiedRecipes = await RecipeService.getAllRecipies(
+      req.query.page,
+      req.query.search
+    );
 
     if (modifiedRecipes) {
       return res.status(Constants.OK).json({
         isSuccess: true,
         data: { recipes: modifiedRecipes, message: `Recipe Found` },
       });
-    } else {
-      return res.status(Constants.FORBIDDEN).json({
-        isSuccess: false,
-        data: { message: `Recipe Not Found` },
-      });
     }
+    return res.status(Constants.FORBIDDEN).json({
+      isSuccess: false,
+      data: { message: `Recipe Not Found` },
+    });
   } catch (error) {
-    console.error(error)
+    console.error(error);
     return res.status(Constants.SERVER_ERROR).json({
       isSuccess: false,
       data: { message: error.message },
@@ -287,41 +224,21 @@ const getAllRecipes = async (req, res) => {
   }
 };
 
-const getOneRecipe = async (req, res) => {
+const getOneRecipe = async (req: Request<{ id: string }>, res) => {
   const recipeId = req.params.id;
   try {
-    const foundRecipe = await RecipeModel.findById(recipeId)
-      .populate({
-        path: "userId",
-        model: User,
-        select: ["firstName", "lastName"],
-      })
-      .populate({
-        path: "ingredientsList.ingredientId",
-        model: IngredientModel,
-        select: ["ingredientName"],
-      })
-      .populate({
-        path: "difficultyLevel",
-        model: DifficultyLevelModel,
-        select: ["level"],
-      })
-      .lean()
-      .exec();
-
-    const modifiedRecipe = getModifiedRecipe(foundRecipe);
+    const modifiedRecipe = await RecipeService.getRecipeById(recipeId);
 
     if (modifiedRecipe) {
       return res.status(Constants.OK).json({
         isSuccess: true,
         data: { recipes: modifiedRecipe, message: `Recipe Found` },
       });
-    } else {
-      return res.status(Constants.VALIDATION_ERROR).json({
-        isSuccess: false,
-        data: { message: `Recipe not Found` },
-      });
     }
+    return res.status(Constants.VALIDATION_ERROR).json({
+      isSuccess: false,
+      data: { message: `Recipe not Found` },
+    });
   } catch (error) {
     return res.status(Constants.SERVER_ERROR).json({
       isSuccess: false,

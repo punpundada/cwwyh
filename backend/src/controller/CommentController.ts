@@ -9,7 +9,7 @@ import CommentsModel, { CommentModel } from "../models/CommentsModel";
 import { Constants } from "../Constants";
 import z from "zod";
 import { getUserDataById } from "../service/userService";
-import { getReciepById } from "../service/recipeService";
+import RecipeService from "../service/recipeService";
 import { Res } from "../types/res";
 import { getCommentByCommentId, getCommentsByRecipeId } from "../service/commentService";
 
@@ -22,7 +22,7 @@ export const addComment = async (
     validComment.createdAt = new Date();
     const [user, recipe] = await Promise.all([
       getUserDataById(validComment.authorId),
-      getReciepById(validComment.recipeId),
+      RecipeService.getRecipeById(validComment.recipeId),
     ]);
 
     if (!user || !recipe) {
@@ -141,7 +141,7 @@ export const commentsByRecipeId = async (
   res: Response<Res<CommentModel[]>>
 ) => {
   try {
-    const recipe = await getReciepById(req.params.id);
+    const recipe = await RecipeService.getRecipeById(req.params.id);
     if (!recipe) {
       return res.status(Constants.NOT_FOUND).json({
         isSuccess: false,
