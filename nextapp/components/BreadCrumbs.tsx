@@ -18,7 +18,7 @@ const BreadCrumbs = ({ names }: { names: string[] }) => {
   const path = usePathname() ?? "";
   const pathsArr = path.split("/").filter((x) => x !== "");
   return (
-    <Container className="h-14 justify-start pl-5 mb-3">
+    <Container className="h-14 justify-start pl-5 mb-3 w-full">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>

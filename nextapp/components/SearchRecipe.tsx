@@ -7,7 +7,7 @@ import useDebounce from "@/hooks/useDebounce";
 const SearchRecipe = () => {
   const router = useRouter();
   const [search, setSearch] = useState("");
-  const debouncedSearch = useDebounce(search);
+  const debouncedSearch = useDebounce(search,700);
 
   useEffect(() => {
     if (debouncedSearch !== "") {

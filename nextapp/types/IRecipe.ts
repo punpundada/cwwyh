@@ -22,6 +22,11 @@ interface IngredientsList {
   ingredientId: string;
   quantity: string;
   _id: string;
+  measurement: {
+    _id: string;
+    name: string;
+    type: string;
+  };
 }
 
 interface ImgUrl {
