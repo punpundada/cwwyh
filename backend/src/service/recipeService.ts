@@ -5,6 +5,7 @@ import MeasurementModel from "../models/MeasurementModel";
 import RecipeModel, { RecipeType } from "../models/RecipeModel";
 import User from "../models/UserModel";
 import { RecipeSelectType, RecipeZodType } from "../types/recipe";
+import LikesModel from "../models/LikesModel";
 
 export default class RecipeService {
   static async getRecipeByNameAndUserId(name: string, userId: string) {
@@ -22,7 +23,7 @@ export default class RecipeService {
     return RecipeModel.findByIdAndDelete({ _id: recipeId });
   }
 
-  static async getAllRecipies(page: number, search: string) {
+  static async getAllRecipies(page: number, search: string, userId?: string) {
     const perPageItems = 9;
     let query = {} as any;
     let pageNumber = Math.abs(+page) - 1 ?? 0;
@@ -38,7 +39,7 @@ export default class RecipeService {
     const foundRecipes = await RecipeModel.find(query)
       ?.skip(perPageItems * pageNumber)
       ?.limit(perPageItems)
-      ?.sort({createdAt:-1})
+      ?.sort({ createdAt: -1 })
       ?.populate({
         path: "userId",
         model: User,
@@ -50,22 +51,40 @@ export default class RecipeService {
         select: ["ingredientName"],
       })
       ?.populate({
-        path:"ingredientsList.measurement",
-        model:MeasurementModel,
-        select:["name","type","_id"]
+        path: "ingredientsList.measurement",
+        model: MeasurementModel,
+        select: ["name", "type", "_id"],
       })
       ?.lean()
       ?.exec();
 
-    console.log("foundRecipes",JSON.stringify(foundRecipes?.[0],null,2));  
-    
     const modifiedRecipes = foundRecipes?.map((recipe) => {
       return getModifiedRecipe(recipe);
     });
-    return modifiedRecipes;
+
+    const likesArrPromise = modifiedRecipes.map(async (recipe) => {
+      return LikesModel.getLikeCountByRecipeId(recipe._id);
+    });
+
+    let isLikedList = [];
+
+    if (userId) {
+      const isLikedPromise = modifiedRecipes.map((recipe) =>
+        LikesModel.exists({ userId, recipeId: recipe._id })
+      );
+      isLikedList = await Promise.all(isLikedPromise);
+    }
+
+    const likesArr = await Promise.all(likesArrPromise);
+
+    return modifiedRecipes.map((x, i) => ({
+      ...x,
+      likesCount: likesArr[i],
+      isLiked: !!isLikedList[i],
+    }));
   }
 
-  static async getRecipeById(recipeId: string) {
+  static async getRecipeById(recipeId: string, userId?: string) {
     const foundRecipe = await RecipeModel.findById(recipeId)
       ?.populate({
         path: "userId",
@@ -77,9 +96,20 @@ export default class RecipeService {
         model: IngredientModel,
         select: ["ingredientName"],
       })
+      ?.populate({
+        path: "ingredientsList.measurement",
+        model: MeasurementModel,
+        select: ["name", "type", "_id"],
+      })
       ?.lean()
       ?.exec();
-    return getModifiedRecipe(foundRecipe);
+    const likesCount = await LikesModel.getLikeCountByRecipeId(recipeId);
+    let isLiked = false;
+    if (userId) {
+      isLiked = !!(await LikesModel.exists({ userId, recipeId }));
+    }
+    const recipe = getModifiedRecipe(foundRecipe);
+    return { ...recipe, likesCount, isLiked };
   }
 
   static async update(recipe: RecipeSelectType) {

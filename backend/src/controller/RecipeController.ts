@@ -203,12 +203,15 @@ export default class RecipeController {
   };
   static getAllRecipes = async (
     req: Request<unknown, unknown, unknown, { page: number; search: string }>,
-    res
+    res:Response
   ) => {
+    console.log("res.locals",res.locals);
+    
     try {
       const modifiedRecipes = await RecipeService.getAllRecipies(
         req.query.page,
-        req.query.search
+        req.query.search,
+        res.locals.id
       );
 
       if (modifiedRecipes) {
@@ -229,10 +232,10 @@ export default class RecipeController {
       });
     }
   };
-  static getOneRecipe = async (req: Request<{ id: string }>, res) => {
+  static getOneRecipe = async (req: Request<{ id: string }>, res:Response) => {
     const recipeId = req.params.id;
     try {
-      const modifiedRecipe = await RecipeService.getRecipeById(recipeId);
+      const modifiedRecipe = await RecipeService.getRecipeById(recipeId,res.locals.id);
 
       if (modifiedRecipe) {
         return res.status(Constants.OK).json({

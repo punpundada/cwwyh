@@ -1,6 +1,6 @@
 import { Router } from "express";
 import RecipeController from "../controller/RecipeController";
-import ValidateToken from "../middleware/ValidationTokenHandler";
+import ValidateToken, { getUserFromToken } from "../middleware/ValidationTokenHandler";
 
 const RecipieRouter = Router();
 
@@ -10,7 +10,7 @@ RecipieRouter.delete("/delete/:id", ValidateToken, RecipeController.deleteRecipe
 RecipieRouter.post("/getByIngredients", RecipeController.getRecipesByIngredients);
 RecipieRouter.post("/image/add", ValidateToken, RecipeController.addRecipeImageUrl);
 RecipieRouter.delete("/image/delete", ValidateToken, RecipeController.deleteOneImage);
-RecipieRouter.get("/get", RecipeController.getAllRecipes);
-RecipieRouter.get("/get/:id", RecipeController.getOneRecipe);
+RecipieRouter.get("/get",getUserFromToken,RecipeController.getAllRecipes as any);
+RecipieRouter.get("/get/:id", getUserFromToken,RecipeController.getOneRecipe);
 
 export default RecipieRouter;
