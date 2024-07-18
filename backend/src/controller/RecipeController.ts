@@ -5,284 +5,278 @@ import { RecipeSelectType, RecipeZodType, zodRecipeSchema } from "../types/recip
 import RecipeService from "../service/recipeService";
 import { GenericResponse } from "../types/res";
 
-const addRecipe = async (req: Request<any, any, RecipeZodType>, res: Response) => {
-  try {
-    req.body.userId = res.locals.id;
+export default class RecipeController {
+  static addRecipe = async (req: Request<any, any, RecipeZodType>, res: Response) => {
+    try {
+      req.body.userId = res.locals.id;
 
-    const validRecipe = zodRecipeSchema.parse(req.body);
+      const validRecipe = zodRecipeSchema.parse(req.body);
 
-    const foundRecipe = await RecipeService.getRecipeByNameAndUserId(
-      validRecipe.recipeName,
-      validRecipe.userId
-    );
+      const foundRecipe = await RecipeService.getRecipeByNameAndUserId(
+        validRecipe.recipeName,
+        validRecipe.userId
+      );
 
-    if (foundRecipe) {
-      return res.status(Constants.FORBIDDEN).json({
-        isSuccess: false,
-        data: {
-          message: `User has already Recipe with name: ${validRecipe.recipeName}`,
-        },
-      });
-    }
+      if (foundRecipe) {
+        return res.status(Constants.FORBIDDEN).json({
+          isSuccess: false,
+          data: {
+            message: `User has already Recipe with name: ${validRecipe.recipeName}`,
+          },
+        });
+      }
 
-    const newRecipe = await RecipeService.saveRecipe(validRecipe);
+      const newRecipe = await RecipeService.saveRecipe(validRecipe);
 
-    if (newRecipe) {
-      return res.status(Constants.CREATED).json({
-        isSuccess: true,
-        data: { message: `New Recipe with id:${newRecipe?._id} is created ` },
-      });
-    }
-    return res.status(Constants.SERVER_ERROR).json({
-      isSuccess: false,
-      data: { message: "Something went wrong" },
-    });
-  } catch (error) {
-    return res
-      .status(Constants.SERVER_ERROR)
-      .json({ isSuccess: false, data: { message: error.message, issues: error.issues } });
-  }
-};
-
-const deleteRecipe = async (req, res) => {
-  try {
-    const id = req.params.id;
-    if (!id) {
-      return res
-        .status(Constants.VALIDATION_ERROR)
-        .json({ isSuccess: false, data: { message: "Recipe id is required" } });
-    }
-
-    const deletadRecipe = await RecipeService.deleteById(id);
-    if (deletadRecipe) {
-      return res.status(Constants.OK).json({
-        isSuccess: true,
-        data: { message: `Recipe with ${deletadRecipe?._id} id Deletad` },
-      });
-    } else {
-      return res
-        .status(Constants.VALIDATION_ERROR)
-        .json({ isSuccess: false, data: { message: "Recipe is not Deleted" } });
-    }
-  } catch (error) {
-    return res
-      .status(Constants.VALIDATION_ERROR)
-      .json({ isSuccess: false, data: { message: error.message } });
-  }
-};
-
-const getRecipesByIngredients = async (req, res) => {
-  const { ingredientsTosearch } = req.body;
-  try {
-    if (!ingredientsTosearch && !Array.isArray(ingredientsTosearch)) {
-      return res.status(Constants.VALIDATION_ERROR).json({
-        isSuccess: false,
-        data: { message: "Ingredient List not found" },
-      });
-    }
-
-    const recipes = await RecipeModel.find({
-      "ingredientsList.ingredientId": { $all: ingredientsTosearch },
-    });
-
-    if (recipes && recipes.length !== 0) {
-      return res
-        .status(Constants.OK)
-        .json({ isSuccess: true, data: { recipes, message: "Recipes found" } });
-    } else {
-      return res
-        .status(Constants.NOT_FOUND)
-        .json({ isSuccess: false, data: { message: "Recipes not found" } });
-    }
-  } catch (error) {
-    return res
-      .status(Constants.SERVER_ERROR)
-      .json({ isSuccess: false, data: { message: error.message } });
-  }
-};
-
-const addRecipeImageUrl = async (req, res) => {
-  const { newImgUrls, recipeId } = req.body;
-  if (!newImgUrls || !recipeId || !Array.isArray(newImgUrls) || newImgUrls.length === 0) {
-    return res.status(Constants.VALIDATION_ERROR).json({
-      isSuccess: false,
-      data: { message: "Image URLs and Recipe Id is a Required Field" },
-    });
-  }
-
-  try {
-    const foundRecipe = await RecipeModel.findById(recipeId);
-
-    if (!foundRecipe) {
-      return res.status(Constants.VALIDATION_ERROR).json({
-        isSuccess: false,
-        data: { message: "Recipe Not Found" },
-      });
-    }
-
-    const updatedUrls = [...foundRecipe.imgUrls, ...newImgUrls];
-
-    const updatedRecipe = await RecipeModel.findByIdAndUpdate(
-      { _id: recipeId },
-      { imgUrls: updatedUrls },
-      { new: true }
-    );
-
-    if (updatedRecipe) {
-      return res.status(Constants.OK).json({
-        isSuccess: true,
-        data: { recipe: updatedRecipe, message: "Recipe Image URL updated" },
-      });
-    } else {
+      if (newRecipe) {
+        return res.status(Constants.CREATED).json({
+          isSuccess: true,
+          data: { message: `New Recipe with id:${newRecipe?._id} is created ` },
+        });
+      }
       return res.status(Constants.SERVER_ERROR).json({
         isSuccess: false,
-        data: { message: "Recipe Image URL not updated" },
+        data: { message: "Something went wrong" },
+      });
+    } catch (error) {
+      return res.status(Constants.SERVER_ERROR).json({
+        isSuccess: false,
+        data: { message: error.message, issues: error.issues },
       });
     }
-  } catch (error) {
-    return res.status(Constants.SERVER_ERROR).json({
-      isSuccess: false,
-      data: { message: error.message },
-    });
-  }
-};
+  };
 
-const deleteOneImage = async (req, res) => {
-  const { recipeId, imageId } = req.body;
-  if (!recipeId || !imageId) {
-    return res.status(Constants.VALIDATION_ERROR).json({
-      isSuccess: false,
-      data: { message: "Image Id and Recipe Id required" },
-    });
-  }
+  static deleteRecipe = async (req, res) => {
+    try {
+      const id = req.params.id;
+      if (!id) {
+        return res
+          .status(Constants.VALIDATION_ERROR)
+          .json({ isSuccess: false, data: { message: "Recipe id is required" } });
+      }
 
-  try {
-    const foundRecipe = await RecipeModel.findById(recipeId);
+      const deletadRecipe = await RecipeService.deleteById(id);
+      if (deletadRecipe) {
+        return res.status(Constants.OK).json({
+          isSuccess: true,
+          data: { message: `Recipe with ${deletadRecipe?._id} id Deletad` },
+        });
+      } else {
+        return res
+          .status(Constants.VALIDATION_ERROR)
+          .json({ isSuccess: false, data: { message: "Recipe is not Deleted" } });
+      }
+    } catch (error) {
+      return res
+        .status(Constants.VALIDATION_ERROR)
+        .json({ isSuccess: false, data: { message: error.message } });
+    }
+  };
 
-    // const ad = foundRecipe.
+  static getRecipesByIngredients = async (req, res) => {
+    const { ingredientsTosearch } = req.body;
+    try {
+      if (!ingredientsTosearch && !Array.isArray(ingredientsTosearch)) {
+        return res.status(Constants.VALIDATION_ERROR).json({
+          isSuccess: false,
+          data: { message: "Ingredient List not found" },
+        });
+      }
 
-    if (!foundRecipe) {
+      const recipes = await RecipeModel.find({
+        "ingredientsList.ingredientId": { $all: ingredientsTosearch },
+      });
+
+      if (recipes && recipes.length !== 0) {
+        return res
+          .status(Constants.OK)
+          .json({ isSuccess: true, data: { recipes, message: "Recipes found" } });
+      } else {
+        return res
+          .status(Constants.NOT_FOUND)
+          .json({ isSuccess: false, data: { message: "Recipes not found" } });
+      }
+    } catch (error) {
+      return res
+        .status(Constants.SERVER_ERROR)
+        .json({ isSuccess: false, data: { message: error.message } });
+    }
+  };
+  static addRecipeImageUrl = async (req, res) => {
+    const { newImgUrls, recipeId } = req.body;
+    if (
+      !newImgUrls ||
+      !recipeId ||
+      !Array.isArray(newImgUrls) ||
+      newImgUrls.length === 0
+    ) {
       return res.status(Constants.VALIDATION_ERROR).json({
         isSuccess: false,
-        data: { message: `Recipe with ${recipeId} not Found required` },
+        data: { message: "Image URLs and Recipe Id is a Required Field" },
       });
     }
 
-    let imageIndex = 1;
-    // const imageIndex = foundRecipe.imgUrls.findIndex((img) => {
-    //   return img._id.toString() === imageId;
-    // });
+    try {
+      const foundRecipe = await RecipeModel.findById(recipeId);
 
-    if (imageIndex === -1) {
+      if (!foundRecipe) {
+        return res.status(Constants.VALIDATION_ERROR).json({
+          isSuccess: false,
+          data: { message: "Recipe Not Found" },
+        });
+      }
+
+      const updatedUrls = [...foundRecipe.imgUrls, ...newImgUrls];
+
+      const updatedRecipe = await RecipeModel.findByIdAndUpdate(
+        { _id: recipeId },
+        { imgUrls: updatedUrls },
+        { new: true }
+      );
+
+      if (updatedRecipe) {
+        return res.status(Constants.OK).json({
+          isSuccess: true,
+          data: { recipe: updatedRecipe, message: "Recipe Image URL updated" },
+        });
+      } else {
+        return res.status(Constants.SERVER_ERROR).json({
+          isSuccess: false,
+          data: { message: "Recipe Image URL not updated" },
+        });
+      }
+    } catch (error) {
+      return res.status(Constants.SERVER_ERROR).json({
+        isSuccess: false,
+        data: { message: error.message },
+      });
+    }
+  };
+
+  static deleteOneImage = async (req, res) => {
+    const { recipeId, imageId } = req.body;
+    if (!recipeId || !imageId) {
       return res.status(Constants.VALIDATION_ERROR).json({
         isSuccess: false,
-        data: { message: `Image not found` },
+        data: { message: "Image Id and Recipe Id required" },
       });
     }
 
-    foundRecipe.imgUrls.splice(imageIndex, 1);
+    try {
+      const foundRecipe = await RecipeModel.findById(recipeId);
 
-    foundRecipe.save();
+      // const ad = foundRecipe.
 
-    return res.status(Constants.OK).json({
-      isSuccess: true,
-      data: { message: `Image deleted successfully` },
-    });
-  } catch (error) {
-    return res.status(Constants.SERVER_ERROR).json({
-      isSuccess: false,
-      data: { message: error.message },
-    });
-  }
-};
+      if (!foundRecipe) {
+        return res.status(Constants.VALIDATION_ERROR).json({
+          isSuccess: false,
+          data: { message: `Recipe with ${recipeId} not Found required` },
+        });
+      }
 
-const getAllRecipes = async (
-  req: Request<unknown, unknown, unknown, { page: number; search: string }>,
-  res
-) => {
-  try {
-    const modifiedRecipes = await RecipeService.getAllRecipies(
-      req.query.page,
-      req.query.search
-    );
+      let imageIndex = 1;
+      // const imageIndex = foundRecipe.imgUrls.findIndex((img) => {
+      //   return img._id.toString() === imageId;
+      // });
 
-    if (modifiedRecipes) {
+      if (imageIndex === -1) {
+        return res.status(Constants.VALIDATION_ERROR).json({
+          isSuccess: false,
+          data: { message: `Image not found` },
+        });
+      }
+
+      foundRecipe.imgUrls.splice(imageIndex, 1);
+
+      foundRecipe.save();
+
       return res.status(Constants.OK).json({
         isSuccess: true,
-        data: { recipes: modifiedRecipes, message: `Request was successfull` },
+        data: { message: `Image deleted successfully` },
+      });
+    } catch (error) {
+      return res.status(Constants.SERVER_ERROR).json({
+        isSuccess: false,
+        data: { message: error.message },
       });
     }
-    return res.status(Constants.NOT_FOUND).json({
-      isSuccess: false,
-      data: { message: `Recipe Not Found` },
-    });
-  } catch (error) {
-    console.error(error);
-    return res.status(Constants.SERVER_ERROR).json({
-      isSuccess: false,
-      data: { message: error.message },
-    });
-  }
-};
+  };
+  static getAllRecipes = async (
+    req: Request<unknown, unknown, unknown, { page: number; search: string }>,
+    res
+  ) => {
+    try {
+      const modifiedRecipes = await RecipeService.getAllRecipies(
+        req.query.page,
+        req.query.search
+      );
 
-const getOneRecipe = async (req: Request<{ id: string }>, res) => {
-  const recipeId = req.params.id;
-  try {
-    const modifiedRecipe = await RecipeService.getRecipeById(recipeId);
-
-    if (modifiedRecipe) {
-      return res.status(Constants.OK).json({
-        isSuccess: true,
-        data: { recipes: modifiedRecipe, message: `Recipe Found` },
+      if (modifiedRecipes) {
+        return res.status(Constants.OK).json({
+          isSuccess: true,
+          data: { recipes: modifiedRecipes, message: `Request was successfull` },
+        });
+      }
+      return res.status(Constants.NOT_FOUND).json({
+        isSuccess: false,
+        data: { message: `Recipe Not Found` },
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(Constants.SERVER_ERROR).json({
+        isSuccess: false,
+        data: { message: error.message },
       });
     }
-    return res.status(Constants.VALIDATION_ERROR).json({
-      isSuccess: false,
-      data: { message: `Recipe not Found` },
-    });
-  } catch (error) {
-    return res.status(Constants.SERVER_ERROR).json({
-      isSuccess: false,
-      data: { message: error.message },
-    });
-  }
-};
+  };
+  static getOneRecipe = async (req: Request<{ id: string }>, res) => {
+    const recipeId = req.params.id;
+    try {
+      const modifiedRecipe = await RecipeService.getRecipeById(recipeId);
 
-const updateRecipe = async (
-  req:Request<{id:string},unknown,RecipeSelectType>,
-  res:Response<GenericResponse<RecipeSelectType>>,
-  next:NextFunction
-)=>{
-  try {
-    if(req.params.id !== req.body._id){
+      if (modifiedRecipe) {
+        return res.status(Constants.OK).json({
+          isSuccess: true,
+          data: { recipes: modifiedRecipe, message: `Recipe Found` },
+        });
+      }
       return res.status(Constants.VALIDATION_ERROR).json({
-        isSuccess:false,
-        issues:[],
-        message:"Invalid ids"
-      })
+        isSuccess: false,
+        data: { message: `Recipe not Found` },
+      });
+    } catch (error) {
+      return res.status(Constants.SERVER_ERROR).json({
+        isSuccess: false,
+        data: { message: error.message },
+      });
     }
-    
-    const data =  await RecipeService.update(req.body);
-    console.log(data);
-    if(data){
-      return res.status(Constants.OK).json({
-        isSuccess:true,
-        message:"Recipe Updated",
-        result:data as any
-      })
+  };
+
+  static updateRecipe = async (
+    req: Request<{ id: string }, unknown, RecipeSelectType>,
+    res: Response<GenericResponse<RecipeSelectType>>,
+    next: NextFunction
+  ) => {
+    try {
+      if (req.params.id !== req.body._id) {
+        return res.status(Constants.VALIDATION_ERROR).json({
+          isSuccess: false,
+          issues: [],
+          message: "Invalid ids",
+        });
+      }
+
+      const data = await RecipeService.update(req.body);
+      console.log(data);
+      if (data) {
+        return res.status(Constants.OK).json({
+          isSuccess: true,
+          message: "Recipe Updated",
+          result: data as any,
+        });
+      }
+    } catch (error) {
+      next(error);
     }
-  } catch (error) {
-    next(error)
-  }
+  };
 }
-
-export {
-  addRecipe,
-  deleteRecipe,
-  getRecipesByIngredients,
-  addRecipeImageUrl,
-  deleteOneImage,
-  getAllRecipes,
-  getOneRecipe,
-  updateRecipe,
-};
