@@ -209,10 +209,10 @@ const getAllRecipes = async (
     if (modifiedRecipes) {
       return res.status(Constants.OK).json({
         isSuccess: true,
-        data: { recipes: modifiedRecipes, message: `Recipe Found` },
+        data: { recipes: modifiedRecipes, message: `Request was successfull` },
       });
     }
-    return res.status(Constants.FORBIDDEN).json({
+    return res.status(Constants.NOT_FOUND).json({
       isSuccess: false,
       data: { message: `Recipe Not Found` },
     });

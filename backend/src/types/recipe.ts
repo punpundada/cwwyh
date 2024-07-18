@@ -10,6 +10,7 @@ export const zodRecipeSchema = z.object({
           required_error: "ingredient id is a required field",
         }),
         quantity: z.string({ required_error: "quantity is a required field" }),
+        measurement:z.string({required_error:"Measurement is required"})
       })
     )
     .min(1, "Minimum ingredients length is 1"),
@@ -61,6 +62,11 @@ export const RecipeSelectSchema = z.object({
           required_error: "ingredient id is a required field",
         }),
         quantity: z.string({ required_error: "quantity is a required field" }),
+        measurement:z.object({
+          _id:z.string(),
+          name:z.string(),
+          type:z.string(),
+        }),
       })
     )
     .min(1, "Minimum ingredients length is 1"),

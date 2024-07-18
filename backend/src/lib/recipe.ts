@@ -4,6 +4,7 @@ function getModifiedRecipe(recipe) {
       _id: ingredient?._id,
       quantity: ingredient?.quantity,
       ingredientName: ingredient?.ingredientId?.ingredientName,
+      measurement:ingredient?.measurement
     };
   });
   const { userId, ...rest } = recipe;

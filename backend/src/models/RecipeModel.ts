@@ -20,6 +20,10 @@ const RecipeSchema = new Schema(
           required: [true, "Ingredients List is a Required Field"],
         },
         quantity: String,
+        measurement:{
+          type:Schema.Types.ObjectId,
+          ref:"Measurements",
+        }
       },
     ],
     description: {
