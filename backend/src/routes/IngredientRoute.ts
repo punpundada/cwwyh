@@ -5,7 +5,7 @@ import ValidateToken from "../middleware/ValidationTokenHandler";
 const IngredientRouter = Router();
 
 IngredientRouter.post("/addOne", ValidateToken,addOneIngredient);
-IngredientRouter.get("/get",ValidateToken, getAllIngredients);
+IngredientRouter.get("/get", getAllIngredients);
 IngredientRouter.delete("/delete/:id",ValidateToken, deleteIngredient);
 IngredientRouter.put("/update",ValidateToken, updateIngredient);
 

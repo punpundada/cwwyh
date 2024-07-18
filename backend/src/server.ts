@@ -11,10 +11,11 @@ import  env  from './lib/env';
 import { commentRoute } from './routes/CommentRoute';
 import { likeRoute } from './routes/LikeRoute';
 import errorHandler from './middleware/errorHandler';
+import measurementRoute from './routes/MeasurementRoute';
 
 const app = express();
 const port = env.PORT || 9002;
-app.use(cors());
+app.use(cors({origin:"http://localhost:3000",credentials:true}));
 app.use(json())
 
 dbConnection()
@@ -26,6 +27,7 @@ app.use('/api/cuisine', cuisineRouter);
 app.use('/api/level', DifficuiltyLevelRoute);
 app.use('/api/comments', commentRoute);
 app.use('/api/likes', likeRoute);
+app.use('/api/measurement', measurementRoute);
 
 app.use("*",(req,res)=>{
     res.status(Constants.NOT_FOUND).json({ message: 'URL you are looking for does not exist' });

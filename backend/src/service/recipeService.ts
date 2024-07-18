@@ -1,5 +1,7 @@
+import { log } from "console";
 import { getModifiedRecipe } from "../lib/recipe";
 import { IngredientModel } from "../models/IngredientModel";
+import MeasurementModel from "../models/MeasurementModel";
 import RecipeModel, { RecipeType } from "../models/RecipeModel";
 import User from "../models/UserModel";
 import { RecipeSelectType, RecipeZodType } from "../types/recipe";
@@ -47,9 +49,16 @@ export default class RecipeService {
         model: IngredientModel,
         select: ["ingredientName"],
       })
+      ?.populate({
+        path:"ingredientsList.measurement",
+        model:MeasurementModel,
+        select:["name","type","_id"]
+      })
       ?.lean()
       ?.exec();
 
+    console.log("foundRecipes",JSON.stringify(foundRecipes?.[0],null,2));  
+    
     const modifiedRecipes = foundRecipes?.map((recipe) => {
       return getModifiedRecipe(recipe);
     });
