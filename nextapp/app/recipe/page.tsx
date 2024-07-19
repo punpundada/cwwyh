@@ -1,34 +1,40 @@
+"use client";
 import BreadCrumbs from "@/components/BreadCrumbs";
-import Container from "@/components/Container";
 import RecipeCard from "@/components/RecipeCard";
-import SearchRecipe from "@/components/SearchRecipe";
-import {getAllRecipeService} from "@/services/recipeService";
+import RecipeService, { getAllRecipeService } from "@/services/recipeService";
+import { IRecipe, RecipeCardType } from "@/types/IRecipe";
+import React from "react";
 
-const RecipePage = async ({
+const RecipePage = ({
   searchParams,
 }: {
   searchParams: {
     [key: string]: string | string[] | undefined;
   };
 }) => {
+  const [recipes, setRecipies] = React.useState<RecipeCardType[]>([]);
   const page = searchParams["page"] ?? 0;
   const search = searchParams["search"];
-  const data = await getAllRecipeService(page, search);
-  if (!data) return <>Something went wrong</>;
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      const data:any = await RecipeService.getRecipeCardList(page, search);
+      if(data.isSuccess){
+        setRecipies(data.result);
+      }
+    };
+    fetchData();
+  }, [setRecipies,page,search?.length]);
+
   return (
-    <Container className="flex-col items-start">
-      {/* <BreadCrumbs names={["Home","Recipe"]} /> */}
-    <Container className="flex-col-reverse gap-2 md:flex-row h-full relative">
-      <Container className="w-full md:w-3/4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-4 sticky p-8">
-        {data.data.recipes.map((x) => (
-            <RecipeCard {...x} key={x._id}  />
+    <div className="">
+      <BreadCrumbs names={["Recipe"]} />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-8">
+        {recipes.map((x) => (
+          <RecipeCard {...x}  key={x._id} />
         ))}
-      </Container>
-      <Container className="w-1/4 h-min md:h-full mt-[10rem] md:mt-0 static md:p-8">
-        <SearchRecipe/>
-      </Container>
-    </Container>
-    </Container>
+      </div>
+    </div>
   );
 };
 

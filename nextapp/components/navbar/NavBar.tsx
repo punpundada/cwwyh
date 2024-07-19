@@ -3,12 +3,11 @@ import { cn } from "@/lib/utils";
 import Container from "../Container";
 import { Button } from "../ui/button";
 import Link from "next/link";
-import Image from "next/image";
-import logo from "@/public/CWWYH.jpeg";
 import Logo from "./Logo";
 import { navLinks } from "@/constants/navLinks";
 import SideSheet from "./SideSheet";
 import LoginButton from "./LoginButton";
+import SearchRecipe from "../SearchRecipe";
 
 type navTypes = React.HTMLAttributes<HTMLDivElement>;
 
@@ -21,18 +20,16 @@ const NavBar = ({ className, ...props }: navTypes) => {
         </Container>
         <Container className="justify-start ms-4">
           <Logo />
-        </Container>
-
-        <Container className="hidden justify-end h-full md:flex">
-          <div className="p-3 h-full flex gap-4 justify-center align-middle">
+          <div className="p-3 h-full hidden md:flex justify-center align-middle">
             {navLinks.map((x) => {
               return (
                 <Button
                   key={x.id}
-                  // size={'lg'}
                   variant={"ghost"}
                   asChild
-                  className={cn("text-lg hover:translate-y-1 hover:scale-105 transition-all")}
+                  className={cn(
+                    "text-lg hover:translate-y-1 hover:scale-105 transition-all"
+                  )}
                 >
                   <Link href={x.path} className="text-lg">
                     {x.name}
@@ -42,7 +39,11 @@ const NavBar = ({ className, ...props }: navTypes) => {
             })}
           </div>
         </Container>
-            <LoginButton />
+
+        <div className="w-full md:w-1/3">
+          <SearchRecipe />
+        </div>
+        <LoginButton />
       </Container>
     </nav>
   );

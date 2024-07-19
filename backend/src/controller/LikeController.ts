@@ -1,94 +1,76 @@
 import { Request, Response } from "express";
-import LikesModel from "../models/LikesModel";
 import { Constants } from "../Constants";
-import { getLikeCount } from "../service/likeService";
-import { Res } from "../types/res";
+import LikeService from "../service/likeService";
+import { GenericResponse } from "../types/res";
+import { CustomError } from "../lib/utils";
 
 export const likeRecipe = async (
   req: Request<unknown, unknown, { userId: string; recipeId: string }>,
-  res: Response
+  res: Response<GenericResponse<boolean>>,
+  next
 ) => {
   try {
-    const savedLike = await LikesModel.create(req.body);
+    req.body.userId = res.locals.id;
+    const savedLike = await LikeService.like(req.body);
     if (!savedLike) {
       return res.status(Constants.VALIDATION_ERROR).json({
         isSuccess: false,
-        data: {
-          message: "Like was not saved",
-        },
+        issues: [],
+        message: "Request was unsuccessful",
       });
     }
     return res.status(Constants.OK).json({
       isSuccess: true,
-      data: {
-        message: "Like saved successfully",
-      },
+      message: "Request was successful",
+      result: true,
     });
   } catch (error) {
-    if(error.code.toString() === '11000' ){
-      return res.status(Constants.VALIDATION_ERROR).json({
-        isSuccess: false,
-        data: {
-          message: "Duplicate like by user",
-        },
-      })
+    if (error.code.toString() === "11000" && error instanceof Error) {
+      const err = new CustomError("Duplicate like", Constants.VALIDATION_ERROR);
+      next(err);
     }
-    return res.status(Constants.SERVER_ERROR).json({
-      isSuccess: false,
-      data: {
-        message: error.message,
-      },
-    });
+    next(error);
   }
 };
 
 export const removeLike = async (
   req: Request<unknown, unknown, { userId: string; recipeId: string }>,
-  res: Response
+  res: Response<GenericResponse<boolean>>,
+  next
 ) => {
   try {
-    const deletedLike = await LikesModel.findOneAndDelete(req.body);
+    req.body.userId = res.locals.id;
+    const deletedLike = await LikeService.unkile(req.body);
     if (!deletedLike) {
-      return res.status(Constants.VALIDATION_ERROR).json({
+      return res.status(Constants.NOT_FOUND).json({
         isSuccess: false,
-        data: {
-          message: "Like was not deleted or not found",
-        },
+        issues: [],
+        message: "Request failed",
       });
     }
     return res.status(Constants.OK).json({
       isSuccess: true,
-      data: {
-        message: "Like removed successfully",
-      },
+      message: "Request was successful",
+      result: true,
     });
   } catch (error) {
-    return res.status(Constants.SERVER_ERROR).json({
-      isSuccess: false,
-      data: {
-        message: error.message,
-      },
-    });
+    next(error);
   }
 };
 
 export const likeCount = async (
   req: Request<{ recipeId: string }>,
-  res: Response<Res<number>>
+  res: Response<GenericResponse<number>>,
+  next
 ) => {
   try {
-    const count = await getLikeCount(req.params.recipeId);
+    const count = await LikeService.getLikeCount(req.params.recipeId);
     return res.status(Constants.OK).json({
       isSuccess: true,
-      data: { message: "Request was success", result: count },
+      message: "Request was successful",
+      result: count ?? 0,
     });
   } catch (error) {
-    console.error(error);
-    return res.status(Constants.VALIDATION_ERROR).json({
-      isSuccess: false,
-      data: {
-        message: error.message,
-      },
-    });
+    next(error);
   }
 };

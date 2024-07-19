@@ -1,33 +1,54 @@
 import z from "zod";
-export type User = {
-  userId: string;
-  userName: string;
-};
 export interface IRecipe {
-  _id: string;
-  recipeName: string;
-  user: User;
-  ingredientsList: IngredientsList[];
-  prepTime: string;
-  description: string;
-  difficultyLevel: string;
-  imgUrls: ImgUrl[];
-  steps: IStep[];
-}
-interface IStep {
-  step: string;
+  _id: string
+  recipeName: string
+  ingredientsList: IngredientsList[]
+  description: string
+  prepTime: number
+  cookingTime: number
+  difficultyLevel: string
+  imgUrls: ImgUrl[]
+  steps: Step[]
+  cuisine: string
+  course: string
+  servings: number
+  calories: number
+  notes: string
+  createdAt: string
+  updatedAt: string
+  __v: number
+  user: User
+  likesCount: number
+  isLiked: boolean
 }
 
-interface IngredientsList {
-  ingredientId: string;
-  quantity: string;
-  _id: string;
+export interface IngredientsList {
+  _id: string
+  quantity: string
+  measurement: Measurement
 }
 
-interface ImgUrl {
-  imgUrl: string;
-  _id: string;
+export interface Measurement {
+  _id: string
+  name: string
+  type: string
 }
+
+export interface ImgUrl {
+  imgUrl: string
+  _id: string
+}
+
+export interface Step {
+  step: string
+  _id: string
+}
+
+export interface User {
+  userId: string
+  userName: string
+}
+
 
 const IngredientSchema = z.object({
   ingredientId: z
@@ -94,3 +115,21 @@ export const RecipeSchema = z.object({
 });
 
 export type RecipeInsert = z.infer<typeof RecipeSchema>;
+
+
+export const RecipeCardSchema = z.object({
+  _id: z.string(),
+  recipeName: z.string(),
+  userId: z.object({
+    _id: z.string(),
+    firstName: z.string(),
+    lastName: z.string()
+  }),
+  description: z.string(),
+  imgUrls: z.array(z.object({ imgUrl: z.string() })),
+  likesCount: z.number(),
+  isLiked:z.boolean(),
+})
+
+export type RecipeCardType = z.infer<typeof RecipeCardSchema>;
+
