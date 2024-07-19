@@ -132,3 +132,4 @@ export const RecipeCardSchema = z.object({
 })
 
 export type RecipeCardType = z.infer<typeof RecipeCardSchema>;
+

@@ -7,6 +7,7 @@ import User from "../models/UserModel";
 import { RecipeCard, RecipeSelectType, RecipeZodType } from "../types/recipe";
 import LikesModel from "../models/LikesModel";
 
+
 export default class RecipeService {
   static async getRecipeByNameAndUserId(name: string, userId: string) {
     return RecipeModel.findOne({

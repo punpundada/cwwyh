@@ -106,7 +106,6 @@ export const RecipeSelectSchema = z.object({
   }),
   notes: z.string().min(1).optional(),
 });
-// const objectIdSchema = z.string().map(value => new ObjectId(value))
 
 export const RecipeCard = z.object({
   _id: z.any(),
@@ -125,3 +124,4 @@ export const RecipeCard = z.object({
 export type RecipeSelectType = z.infer<typeof RecipeSelectSchema>;
 export type RecipeZodType = z.infer<typeof zodRecipeSchema>;
 export type RecipeCardType = z.infer<typeof RecipeCard>;
+
