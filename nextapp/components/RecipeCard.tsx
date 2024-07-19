@@ -8,19 +8,36 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
-import { IRecipe } from "@/types/IRecipe";
+import {RecipeCardType } from "@/types/IRecipe";
 import Image from "next/image";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { HeartIcon } from "lucide-react";
+import LikesService from "@/services/likesService";
 
-const RecipeCard = ({ _id, description, recipeName, imgUrls }: IRecipe) => {
+const RecipeCard = (props: RecipeCardType) => {
+  const [like, setLike] = React.useState(props.isLiked);
   const router = useRouter();
   const handleCardClick = () => {
-    router.push(`/recipe/${_id}`);
+    router.push(`/recipe/${props._id}`);
   };
-
+  const handleLike = async (
+    e: React.MouseEvent<HTMLSpanElement, MouseEvent>,
+    isLiked: boolean,
+    recipeId: string
+  ) => {
+    e.stopPropagation();
+    if (!isLiked) {
+      const data = await LikesService.like(recipeId);
+      if (data.isSuccess) {
+        setLike(true);
+      }
+    } else {
+      const data = await LikesService.unlike(recipeId);
+      if (data.isSuccess) setLike(false);
+    }
+  };
   return (
     <Card
       className={cn(
@@ -29,15 +46,20 @@ const RecipeCard = ({ _id, description, recipeName, imgUrls }: IRecipe) => {
       onClick={handleCardClick}
     >
       <CardHeader>
-        <CardTitle className="flex justify-between">{recipeName} <HeartIcon /></CardTitle>
-        <CardDescription className="line-clamp-2">
-          {description}
-        </CardDescription>
+        <CardTitle className="my-2">
+          <div className="flex justify-between">
+            {props.recipeName}{" "}
+            <span onClick={(e) => handleLike(e, props.isLiked, props._id)}>
+              {like ? <HeartIcon fill="red" color="red" /> : <HeartIcon />}
+            </span>
+          </div>
+        </CardTitle>
+        <CardDescription className="line-clamp-2">{props.description}</CardDescription>
       </CardHeader>
       <CardContent className="relative flex-grow">
         <Image
-          src={imgUrls[0].imgUrl}
-          alt={`${recipeName} image`}
+          src={props.imgUrls?.[0].imgUrl}
+          alt={`${props.recipeName} image`}
           fill
           className="object-cover w-full h-full"
         />

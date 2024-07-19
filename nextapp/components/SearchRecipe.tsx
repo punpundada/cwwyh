@@ -1,22 +1,23 @@
 'use client'
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Input } from "./ui/input";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import useDebounce from "@/hooks/useDebounce";
 
 const SearchRecipe = () => {
   const router = useRouter();
-  const [search, setSearch] = useState("");
+  const params = useSearchParams();
+  const pathname = usePathname();
+  const [search, setSearch] = React.useState(params.get("search") ?? "");
   const debouncedSearch = useDebounce(search,700);
-
-  useEffect(() => {
+  React.useEffect(() => {
     if (debouncedSearch !== "") {
       router.push(`/recipe?search=${debouncedSearch}`);
     } else {
+      if(pathname === "/recipe")
       router.push(`/recipe`);
     }
-  }, [debouncedSearch, router]);
-
+  }, [debouncedSearch, router.push]);
   return <Input placeholder="Search Recipe" className="w-full" onChange={(e)=>setSearch(e.target.value)} />;
 };
 
