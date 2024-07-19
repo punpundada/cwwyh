@@ -7,7 +7,6 @@ import User from "../models/UserModel";
 import { RecipeCard, RecipeSelectType, RecipeZodType } from "../types/recipe";
 import LikesModel from "../models/LikesModel";
 
-
 export default class RecipeService {
   static async getRecipeByNameAndUserId(name: string, userId: string) {
     return RecipeModel.findOne({
@@ -149,17 +148,22 @@ export default class RecipeService {
 
     const likesCount = await Promise.all(likeCountsPromise);
 
-    const isLikedPromise = foundRecipes.map((recipe) =>
-      LikesModel.exists({ userId, recipeId: recipe._id })
-    );
+    let isLikedList = [];
+    if (userId) {
+      const isLikedPromise = foundRecipes.map((recipe) =>
+        LikesModel.exists({ userId, recipeId: recipe._id })
+      );
 
-    const isLikedList = await Promise.all(isLikedPromise);
+      isLikedList = await Promise.all(isLikedPromise);
+    }
 
-    const data =  foundRecipes.map((x, i) => ({
-      ...x,
-      likesCount: likesCount[i] ?? 0,
-      isLiked: !!isLikedList[i],
-    })).map(x=>RecipeCard.parse(x));
-    return data
+    const data = foundRecipes
+      .map((x, i) => ({
+        ...x,
+        likesCount: likesCount[i] ?? 0,
+        isLiked: !!isLikedList[i],
+      }))
+      .map((x) => RecipeCard.parse(x));
+    return data;
   }
 }
