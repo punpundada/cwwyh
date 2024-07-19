@@ -4,7 +4,7 @@ import { IngredientModel } from "../models/IngredientModel";
 import MeasurementModel from "../models/MeasurementModel";
 import RecipeModel, { RecipeType } from "../models/RecipeModel";
 import User from "../models/UserModel";
-import { RecipeSelectType, RecipeZodType } from "../types/recipe";
+import { RecipeCard, RecipeSelectType, RecipeZodType } from "../types/recipe";
 import LikesModel from "../models/LikesModel";
 
 export default class RecipeService {
@@ -114,5 +114,51 @@ export default class RecipeService {
 
   static async update(recipe: RecipeSelectType) {
     return await RecipeModel.updateOne({ _id: recipe._id }, recipe);
+  }
+
+  static async getCardList(page: number, search: string, userId?: string) {
+    const perPageItems = 9;
+    let query = {} as any;
+    let pageNumber = Math.floor(+page) - 1 ?? 0;
+    if (pageNumber < 0) {
+      pageNumber = 0;
+    }
+    const searchRecipe = search;
+    if (searchRecipe) {
+      const searchRecipeRegex = new RegExp(searchRecipe, "i");
+      query.recipeName = { $regex: searchRecipeRegex };
+    }
+
+    const foundRecipes = await RecipeModel.find(query)
+      .select(["_id", "description", "recipeName", "imgUrls.imgUrl", "userId"])
+      ?.skip(perPageItems * pageNumber)
+      ?.limit(perPageItems)
+      ?.sort({ createdAt: -1 })
+      ?.populate({
+        path: "userId",
+        model: User,
+        select: ["firstName", "lastName"],
+      })
+      ?.lean()
+      ?.exec();
+
+    const likeCountsPromise = foundRecipes.map((recipe) =>
+      LikesModel.getLikeCountByRecipeId(recipe._id)
+    );
+
+    const likesCount = await Promise.all(likeCountsPromise);
+
+    const isLikedPromise = foundRecipes.map((recipe) =>
+      LikesModel.exists({ userId, recipeId: recipe._id })
+    );
+
+    const isLikedList = await Promise.all(isLikedPromise);
+
+    const data =  foundRecipes.map((x, i) => ({
+      ...x,
+      likesCount: likesCount[i] ?? 0,
+      isLiked: !!isLikedList[i],
+    })).map(x=>RecipeCard.parse(x));
+    return data
   }
 }

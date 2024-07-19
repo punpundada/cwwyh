@@ -106,6 +106,22 @@ export const RecipeSelectSchema = z.object({
   }),
   notes: z.string().min(1).optional(),
 });
+// const objectIdSchema = z.string().map(value => new ObjectId(value))
+
+export const RecipeCard = z.object({
+  _id: z.any(),
+  recipeName: z.string(),
+  userId: z.object({
+    _id: z.any(),
+    firstName: z.string(),
+    lastName: z.string()
+  }),
+  description: z.string(),
+  imgUrls: z.array(z.object({ imgUrl: z.string() })),
+  likesCount: z.number(),
+  isLiked:z.boolean(),
+})
 
 export type RecipeSelectType = z.infer<typeof RecipeSelectSchema>;
 export type RecipeZodType = z.infer<typeof zodRecipeSchema>;
+export type RecipeCardType = z.infer<typeof RecipeCard>;
