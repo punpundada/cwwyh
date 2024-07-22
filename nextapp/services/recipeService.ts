@@ -120,5 +120,18 @@ export default class RecipeService {
       }
     }
   );
+
+  static toggleLike = cache(
+   async (recipeId:string)=>{
+      try {
+        const res = await axiosInstance.get<GenericResponse<boolean>>("likes/toggle/"+recipeId)
+        if(res.data.isSuccess){
+          return res.data
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  )
 }
 

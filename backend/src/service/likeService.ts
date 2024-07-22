@@ -18,4 +18,13 @@ export default class LikeService {
   static async unkile(data: { userId: string; recipeId: string }){
     return await LikesModel.findOneAndDelete(data);
   }
+
+  static async toggleLike(data: { userId: string; recipeId: string }){
+    const savedLike = await LikesModel.find(data);
+    if(savedLike && savedLike?.length >0){
+    return await LikesModel.findOneAndDelete(data);
+    }else{
+    return await LikesModel.create(data);
+    }
+  }
 }

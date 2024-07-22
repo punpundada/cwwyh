@@ -3,8 +3,7 @@ export interface ApiRes<T>{
     data:T,
 }
 
-export type GenericResponse<T> =
-  | {
+export type GenericResponse<T> = {
       isSuccess: true;
       result: T;
       message: string;

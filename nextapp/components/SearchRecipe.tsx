@@ -11,7 +11,7 @@ const SearchRecipe = () => {
   const [search, setSearch] = React.useState(params.get("search") ?? "");
   const debouncedSearch = useDebounce(search,700);
   React.useEffect(() => {
-    if (debouncedSearch !== "") {
+    if (debouncedSearch !== "" && debouncedSearch.replaceAll(" ","").length >= 0) {
       router.push(`/recipe?search=${debouncedSearch}`);
     } else {
       if(pathname === "/recipe")

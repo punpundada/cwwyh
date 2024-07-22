@@ -1,8 +1,7 @@
-import { log } from "console";
 import { getModifiedRecipe } from "../lib/recipe";
 import { IngredientModel } from "../models/IngredientModel";
 import MeasurementModel from "../models/MeasurementModel";
-import RecipeModel, { RecipeType } from "../models/RecipeModel";
+import RecipeModel from "../models/RecipeModel";
 import User from "../models/UserModel";
 import { RecipeCard, RecipeSelectType, RecipeZodType } from "../types/recipe";
 import LikesModel from "../models/LikesModel";
@@ -116,7 +115,7 @@ export default class RecipeService {
     return await RecipeModel.updateOne({ _id: recipe._id }, recipe);
   }
 
-  static async getCardList(page: number, search: string, userId?: string) {
+  static async getCardList(page: number, search: string, userId: string) {
     const perPageItems = 9;
     let query = {} as any;
     let pageNumber = Math.floor(+page) - 1 ?? 0;

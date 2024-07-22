@@ -8,35 +8,26 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
-import {RecipeCardType } from "@/types/IRecipe";
+import { RecipeCardType } from "@/types/IRecipe";
 import Image from "next/image";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { HeartIcon } from "lucide-react";
-import LikesService from "@/services/likesService";
+import { useRecipeStore } from "@/store/recipe-store";
 
 const RecipeCard = (props: RecipeCardType) => {
-  const [like, setLike] = React.useState(props.isLiked);
+  const toggleLike = useRecipeStore((s) => s.toggleLike);
   const router = useRouter();
   const handleCardClick = () => {
     router.push(`/recipe/${props._id}`);
   };
   const handleLike = async (
     e: React.MouseEvent<HTMLSpanElement, MouseEvent>,
-    isLiked: boolean,
     recipeId: string
   ) => {
     e.stopPropagation();
-    if (!isLiked) {
-      const data = await LikesService.like(recipeId);
-      if (data.isSuccess) {
-        setLike(true);
-      }
-    } else {
-      const data = await LikesService.unlike(recipeId);
-      if (data.isSuccess) setLike(false);
-    }
+    toggleLike(recipeId);
   };
   return (
     <Card
@@ -49,8 +40,8 @@ const RecipeCard = (props: RecipeCardType) => {
         <CardTitle className="my-2">
           <div className="flex justify-between">
             {props.recipeName}{" "}
-            <span onClick={(e) => handleLike(e, props.isLiked, props._id)}>
-              {like ? <HeartIcon fill="red" color="red" /> : <HeartIcon />}
+            <span onClick={(e) => handleLike(e, props._id)}>
+              {props.isLiked ? <HeartIcon fill="red" color="red" /> : <HeartIcon />}
             </span>
           </div>
         </CardTitle>
