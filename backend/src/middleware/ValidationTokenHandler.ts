@@ -56,3 +56,17 @@ export const getUserFromToken = async (
     next();
   }
 };
+
+declare global {
+  namespace Express {
+    interface Locals {
+      user: {
+        id: string;
+        email: string;
+        firstName: string;
+        lastName: string;
+        imgUrl: string;
+      } | null;
+    }
+  }
+}

@@ -1,6 +1,5 @@
 "use client";
 import { useRecipeStore } from "@/store/recipe-store";
-import { useLayoutEffect } from "react";
 import BreadCrumbs from "@/components/BreadCrumbs";
 import { Card, CardHeader, CardContent,CardFooter } from "@/components/ui/card";
 import Image from "next/image";
@@ -8,11 +7,13 @@ import Container from "@/components/Container";
 import { Separator } from "@/components/ui/separator";
 import { Cookie, AlarmClock, CookingPot, Flame, Circle } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import React from "react";
+
 const RecipePage = ({ params }: { params: { id: string } }) => {
   const getRecipeById = useRecipeStore((s) => s.getRecipeById);
   const recipe = useRecipeStore((s) => s.recipe);
 
-  useLayoutEffect(() => {
+  React.useLayoutEffect(() => {
     const fethData = async () => {
       await getRecipeById(params.id);
     };

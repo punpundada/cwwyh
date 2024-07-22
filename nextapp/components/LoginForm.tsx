@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import Container from "./Container";
 import { InputController } from "./form-control/InputController";
 import { useForm } from "react-hook-form";
@@ -18,11 +18,14 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
+import { useRouter } from "next/navigation";
 
 const LoginForm = () => {
+  const router = useRouter();
   const login = useAuthStore((s) => s.login);
   const { toast } = useToast();
   const isLoading = useAuthStore((s) => s.isLoading);
+  const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
   const form = useForm<ILoginReq>({
     defaultValues: {
       email: "",
@@ -33,16 +36,21 @@ const LoginForm = () => {
   });
   const { control, handleSubmit } = form;
   const onSubmit = async (data: ILoginReq) => {
-    const res = login(data);
-    if (await res) {
+    const res = await login(data);
+    if (res) {
       toast({
         title: "Success",
         description: "Login Successfully",
         duration: 10000,
       });
+      router.back()
     }
   };
-
+  useEffect(()=>{
+    if(isLoggedIn){
+      router.push('/')
+    }
+  },[])
   return (
     <>
       <Card className="shadow-2xl">

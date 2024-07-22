@@ -216,7 +216,7 @@ export default class RecipeController {
       const modifiedRecipes = await RecipeService.getAllRecipies(
         req.query.page,
         req.query.search,
-        res.locals.id
+        res.locals?.id
       );
 
       if (modifiedRecipes) {
@@ -297,7 +297,7 @@ export default class RecipeController {
       const data = await RecipeService.getCardList(
         req.query.page,
         req.query.search,
-        res.locals.id
+        res.locals?.id
       );
       if (data) {
         return res.status(Constants.OK).json({
@@ -312,6 +312,7 @@ export default class RecipeController {
         issues: [],
       });
     } catch (error) {
+      console.error(error);
       next(error);
     }
   }

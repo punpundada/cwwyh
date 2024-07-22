@@ -15,9 +15,15 @@ import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { HeartIcon } from "lucide-react";
 import { useRecipeStore } from "@/store/recipe-store";
+import { useAuthStore } from "@/store/auth-store";
+import { useToast } from "./ui/use-toast";
+import { ToastAction } from "./ui/toast";
 
 const RecipeCard = (props: RecipeCardType) => {
+  const { toast } = useToast();
   const toggleLike = useRecipeStore((s) => s.toggleLike);
+  const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
+
   const router = useRouter();
   const handleCardClick = () => {
     router.push(`/recipe/${props._id}`);
@@ -27,6 +33,20 @@ const RecipeCard = (props: RecipeCardType) => {
     recipeId: string
   ) => {
     e.stopPropagation();
+    if (!isLoggedIn) {
+      toast({
+        title: "Uh oh! Not logged in..",
+        description: "Do you wish to login?",
+        action: (
+          <ToastAction altText="Login" asChild>
+            <Button onClick={() => router.push("/login")} size={"lg"} variant={"outline"}>
+              Login
+            </Button>
+          </ToastAction>
+        ),
+      });
+      return;
+    }
     toggleLike(recipeId);
   };
   return (
@@ -40,8 +60,12 @@ const RecipeCard = (props: RecipeCardType) => {
         <CardTitle className="my-2">
           <div className="flex justify-between">
             {props.recipeName}{" "}
-            <span onClick={(e) => handleLike(e, props._id)}>
-              {props.isLiked ? <HeartIcon fill="red" color="red" /> : <HeartIcon />}
+            <span
+              onClick={(e) => handleLike(e, props._id)}
+              className="text-sm grid grid-cols-2 text-center"
+            >
+              {props.isLiked ? <HeartIcon size={20} fill="red" color="red" /> : <HeartIcon size={20} />}
+              {props.likesCount}
             </span>
           </div>
         </CardTitle>

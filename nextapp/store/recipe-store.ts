@@ -1,4 +1,3 @@
-import LikesService from "@/services/likesService";
 import RecipeService, {
   getAllRecipeService,
   IRecipeRes,
@@ -67,6 +66,9 @@ export const useRecipeStore = create<recipeStoreProps>()((set, get) => ({
       const newList = get().recipeCardList.map((x) => {
         if (x._id === recipe._id) {
           recipe.isLiked = !recipe.isLiked;
+          recipe.likesCount = recipe.isLiked
+            ? recipe.likesCount + 1
+            : recipe.likesCount - 1;
           return recipe;
         }
         return x;
