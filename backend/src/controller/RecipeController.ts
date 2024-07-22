@@ -289,7 +289,7 @@ export default class RecipeController {
     next: NextFunction
   ){
     try {
-      const data =  await RecipeService.getCardList(req.query.page,req.query.search);
+      const data =  await RecipeService.getCardList(req.query.page,req.query.search,res.locals.id);
       if(data){
         return res.status(Constants.OK).json({
           isSuccess:true,

@@ -47,7 +47,7 @@ export const getUserFromToken = async (
     if (typeof authHeader === "string" && authHeader.startsWith("Bearer")) {
       token = authHeader.split(" ")[1];
       jwt.verify(token, env.ACCESS_TOKEN_SECRET, (err, decoded) => {
-        res.locals = decoded.user;
+        res.locals = decoded?.user;
       });
     }
     next();
