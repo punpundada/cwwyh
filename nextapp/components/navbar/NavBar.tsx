@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { cn } from "@/lib/utils";
 import Container from "../Container";
@@ -6,8 +7,8 @@ import Link from "next/link";
 import Logo from "./Logo";
 import { navLinks } from "@/constants/navLinks";
 import SideSheet from "./SideSheet";
-import LoginButton from "./LoginButton";
 import SearchRecipe from "../SearchRecipe";
+import ProfileDropdown from "./ProfileDropdown";
 
 type navTypes = React.HTMLAttributes<HTMLDivElement>;
 
@@ -43,7 +44,7 @@ const NavBar = ({ className, ...props }: navTypes) => {
         <div className="w-full md:w-1/3">
           <SearchRecipe />
         </div>
-        <LoginButton />
+        <ProfileDropdown />
       </Container>
     </nav>
   );

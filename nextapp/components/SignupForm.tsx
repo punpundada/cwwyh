@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils";
 import { ISignupReq, signupSchema } from "@/types/ISignupReq";
 import { useAuthStore } from "@/store/auth-store";
 import { useToast } from "./ui/use-toast";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 
 interface IsignupForm {
@@ -26,9 +26,11 @@ interface IsignupForm {
 }
 
 const SignupForm = ({ className }: IsignupForm) => {
-  const signup = useAuthStore((s) => s.signup);
-  const { toast } = useToast();
+  const pathname = usePathname();
   const router = useRouter();
+  const { toast } = useToast();
+  const signup = useAuthStore((s) => s.signup);
+  const isLoggedIn = useAuthStore((s) => s.isLoggedIn);
   const form = useForm<ISignupReq>({
     defaultValues: {
       email: "",
@@ -51,13 +53,18 @@ const SignupForm = ({ className }: IsignupForm) => {
       router.push("/login");
     }
   };
+
+  React.useEffect(() => {
+    if (isLoggedIn && pathname === '/signup'){
+      router.back();
+    }
+  }, [isLoggedIn]);
+
   return (
     <Card className={cn("w-full shadow-2xl", className)}>
       <CardHeader>
         <CardTitle>Sign Up</CardTitle>
-        <CardDescription>
-          Signup to CWWYH and descover new recipies
-        </CardDescription>
+        <CardDescription>Signup to CWWYH and descover new recipies</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -97,8 +104,9 @@ const SignupForm = ({ className }: IsignupForm) => {
         </Form>
       </CardContent>
       <CardFooter className="text-base">
-        Already have a account? <strong>
-          <Link href={'/login'}>&nbsp;&nbsp;login</Link>
+        Already have a account?{" "}
+        <strong>
+          <Link href={"/login"}>&nbsp;&nbsp;login</Link>
         </strong>
       </CardFooter>
     </Card>

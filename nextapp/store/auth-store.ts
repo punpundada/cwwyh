@@ -6,6 +6,7 @@ import { ApiRes } from "@/types/ApiRes";
 import { devtools, persist ,createJSONStorage} from "zustand/middleware";
 import { ISignupReq } from "@/types/ISignupReq";
 import { ISignup_res, signupService } from "@/services/signupService";
+import { User } from "@/types/user";
 
 interface authStoreProps {
   isLoggedIn: boolean;
@@ -13,7 +14,8 @@ interface authStoreProps {
   login: (data: ILoginReq) => Promise<ApiRes<login_res> | undefined>;
   isLoading: boolean;
   checkIsLoggedIn: () => Promise<boolean>;
-  signup:(data: ISignupReq) => Promise<ApiRes<ISignup_res> | undefined>
+  signup:(data: ISignupReq) => Promise<ApiRes<ISignup_res> | undefined>,
+  user:User | undefined;
 }
 export const useAuthStore = create<authStoreProps>()(
   devtools(
@@ -21,13 +23,14 @@ export const useAuthStore = create<authStoreProps>()(
       (set) => ({
         isLoading: false,
         isLoggedIn: false,
-
+        user:undefined,
         login: async (data): Promise<ApiRes<login_res> | undefined> => {
           try {
             set((s) => ({ isLoading: true }));
             const res = await loginService(data);
             if (res?.isSuccess) {
-              set((s) => ({ isLoggedIn: true }));
+              set(({ isLoggedIn: true }));
+              set({user:res.data.user})  
             }
             set((s) => ({ isLoading: false }));
             return res;
@@ -41,7 +44,15 @@ export const useAuthStore = create<authStoreProps>()(
         logOut: async () => {
           try {
             await deleteToken();
+            if(window.sessionStorage && window.localStorage){
+              try {
+                window.sessionStorage.removeItem("accessToken")
+              } catch (error) {
+                console.error(error)
+              }
+            }
             set((s) => ({ isLoggedIn: false }));
+            set((s) => ({ user: undefined }));
           } catch (error) {
             console.log(error);
           }

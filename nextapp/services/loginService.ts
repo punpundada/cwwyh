@@ -2,11 +2,13 @@ import { storeToken, testCookies } from "@/app/actions";
 import axiosInstance from "@/constants/axiosInstance";
 import { ApiRes } from "@/types/ApiRes";
 import { ILoginReq } from "@/types/loginReq";
+import { User } from "@/types/user";
 import { cache } from "react";
 
 export interface login_res {
   accessToken: string;
   message: string;
+  user:User
 }
 
 export const loginService = cache(async (data: ILoginReq) => {

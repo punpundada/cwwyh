@@ -20,6 +20,8 @@ interface alertProps {
   actionText: string;
   cancleButtonProps?: HTMLAttributes<HTMLButtonElement>;
   actionButtonProps?: HTMLAttributes<HTMLButtonElement>;
+  open?:boolean,
+  setOpen?:(val:boolean)=>void
 }
 
 const AlertDialogBox = ({
