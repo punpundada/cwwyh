@@ -105,7 +105,7 @@ export default class RecipeService {
         restUrl = `${restUrl}?search=${search}`;
       }
       try {
-        const res = await axiosInstance.get<GenericResponse<RecipeCardType[]>>(restUrl);
+        const res = await axiosInstance.get<GenericResponse<{recipes:RecipeCardType[],count:number}>>(restUrl);
         if (res.data?.isSuccess) {
           return res.data;
         } else {
