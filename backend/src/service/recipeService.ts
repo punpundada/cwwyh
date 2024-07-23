@@ -162,4 +162,7 @@ export default class RecipeService {
     })).map(x=>RecipeCard.parse(x));
     return data
   }
+  static async getRecipeCount(){
+    return await RecipeModel.count()
+  }
 }

@@ -285,16 +285,20 @@ export default class RecipeController {
 
   static async getRecipeCardList(
     req: Request<unknown, unknown, unknown,{ page: number; search: string }>,
-    res: Response<GenericResponse<RecipeCardType[]>>,
+    res: Response<GenericResponse<{recipes:RecipeCardType[],count:number}>>,
     next: NextFunction
   ){
     try {
       const data =  await RecipeService.getCardList(req.query.page,req.query.search);
+      const count = await RecipeService.getRecipeCount();
       if(data){
         return res.status(Constants.OK).json({
           isSuccess:true,
           message:"Request was successful",
-          result:data
+          result:{
+            count,
+            recipes:data
+          }
         })
       }
       return res.status(Constants.OK).json({
